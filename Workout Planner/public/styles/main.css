@@ -1,0 +1,59 @@
+body {
+    background: #DDDDDD;
+}
+
+.navbar {
+    background-color: #800000;
+    color: white;
+}
+
+.page-container {
+    margin-top: 150px;
+}
+
+.streakContainer {
+    margin-top: 50px;
+}
+
+#subTitle {
+    display: block;
+    margin: 0;
+    /* width: 100%; */
+    /* border: none;  */
+    /* padding-left: 100vw; */
+    padding-right: 100vw;
+    background-color: gray;
+    color: white;
+    position: fixed;
+    top: 55px;
+}
+
+#todayWork {
+    display: block;
+    width: 100%;
+    border: none;
+    background-color: gray;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+}
+
+#streak{
+    display: block;
+    width: 100%;
+    border: none;
+    background-color: gray;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+}
+
+.pageButtons{
+    margin-left: 50px;
+    margin-top: 20px;
+    /* padding: 14px 28px; */
+}

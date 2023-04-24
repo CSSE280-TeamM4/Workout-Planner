@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+  <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <title>Workout Planner</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-dark fixed-top">
+    <a class="navbar-brand" href="#">Workout Planner</a>
+  </nav>
+
+  <div id="subTitle" class="container page-container navbar navbar-dark">
+    <div class="navbar-brand" id="pageName">Home</div>
+  </div>
+
+  <div id="mainPage" class="container page-container">
+    <button type="button" class="bigButton" id="todayWork">
+      Today's Date
+      <hr>Today's Workout
+      <br> the workout
+    </button>
+  </div>
+
+  <div id="mainPage" class="container streakContainer">
+    <button type="button" class="bigButton" id="streak">
+      My Current Streak
+      <hr>You've Completed Your Last
+      <br> 3
+      <br> Workouts
+    </button>
+  </div>
+
+  <button type="button" class="pageButtons">
+    My Workout Plans
+  </button>
+  <br>
+  <button type="button" class="pageButtons">
+    Calendar
+  </button>
+  <br>
+  <button type="button" class="pageButtons">
+    Workout Log
+  </button>
+  <br>
+  <button type="button" class="pageButtons">
+    My Account
+  </button>
+  <br>
+
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/popper.js"></script>
+  <script src="scripts/bootstrap-material-design.js"></script>
+  <script>$("body").bootstrapMaterialDesign();</script>
+  <script src="/__/firebase/7.18.0/firebase-app.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
+  <script src="/__/firebase/init.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+
+</html>
