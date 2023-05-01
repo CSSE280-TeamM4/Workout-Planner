@@ -80,12 +80,6 @@ body {
     color: white;
 }
 
-.pageButtons{
-    margin-left: 50px;
-    margin-top: 20px;
-    /* padding: 14px 28px; */
-}
-
 /* The switch - the box around the slider */
 .switch {
     position: relative;
@@ -148,3 +142,42 @@ body {
   .slider.round:before {
     border-radius: 50%;
   }
+
+#TodaysWorkout {
+  background-color: #2a2a2a;
+  border-radius: .75em;
+}
+
+#TodaysWorkout > .jumbotron {
+  text-align: center;
+  background-color: #2a2a2a;
+  color: white;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+#workoutStreak {
+  background-color: #2a2a2a;
+  border-radius: .75em;
+}
+
+#workoutStreak > .jumbotron {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  text-align: center;
+  background-color: #2a2a2a;
+  color: white;
+}
+
+.my-4 {
+  border-color: white;
+}
+
+#menu-buttons {
+
+}
+
+#menu-buttons > hr {
+  border: none;
+  height: 1px;
+  background-color: black;
+}

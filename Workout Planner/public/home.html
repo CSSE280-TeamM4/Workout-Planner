@@ -12,51 +12,59 @@
 
 <body>
   <nav class="navbar navbar-dark fixed-top">
-    <a class="navbar-brand" href="#">Workout Planner</a>
+    <a class="navbar-brand" href="/Workout Planner/public/home.html">Workout Planner</a>
   </nav>
 
   <div id="subTitle" class="container page-container navbar navbar-dark">
     <div class="navbar-brand" id="pageName">Home</div>
   </div>
 
-  <div id="mainPage" class="container page-container">
-    <button type="button" class="bigButton" id="todayWork">
-      Today's Date
-      <hr>Today's Workout
-      <br> the workout
-    </button>
+  <div id="homePage" class="container page-container">
+
   </div>
 
-  <div id="mainPage" class="container streakContainer">
-    <button type="button" class="bigButton" id="streak">
-      My Current Streak
-      <hr>You've Completed Your Last
-      <br> 3
-      <br> Workouts
-    </button>
+  <div id="TodaysWorkout" class="container page-container">
+    <div class="jumbotron">
+      <h1 class="display-4">Today's Date</h1>
+      <hr class="my-4">
+      <p class="lead">Today's Workout</p>
+      <p>The Workout</p>
+    </div>
   </div>
 
-  <button type="button" class="pageButtons">
-    My Workout Plans
-  </button>
-  <br>
-  <button type="button" class="pageButtons">
-    Calendar
-  </button>
-  <br>
-  <button type="button" class="pageButtons">
-    Workout Log
-  </button>
-  <br>
-  <button type="button" class="pageButtons">
-    My Account
-  </button>
-  <br>
+  <div id="workoutStreak" class="container streakContainer">
+    <div class="jumbotron">
+      <h1 class="display-4">My Current Streak</h1>
+      <hr class="my-4">
+      <p class="lead">You've Completed Your Last <br> # <br> Workouts</p>
+    </div>
+  </div>
+  <div id="menu-buttons" class="container">
+    <button id="myPlansbtn" type="button" class="btn">
+      My Workout Plans
+    </button>
+    <hr>
+    <button id="calendarbtn" type="button" class="btn">
+      Calendar
+    </button>
+    <hr>
+    <button id="logbtn" type="button" class="btn">
+      Workout Log
+    </button>
+    <hr>
+    <button id="settingsbtn" type="button" class="btn">
+      My Account
+    </button>
+    <hr>
+  </div>
+
 
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
-  <script>$("body").bootstrapMaterialDesign();</script>
+  <script>
+    $("body").bootstrapMaterialDesign();
+  </script>
   <script src="/__/firebase/7.18.0/firebase-app.js"></script>
   <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
