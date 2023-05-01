@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
-  <link rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css" />
   <link rel="stylesheet" href="styles/main.css">
   <title>Workout Planner</title>
 </head>
@@ -15,26 +14,53 @@
   <nav class="navbar navbar-dark fixed-top">
     <a class="navbar-brand" href="#">Workout Planner</a>
   </nav>
-  <div id="loginPage" class="container page-container">
-    <!-- <img id="roseLogo" src="images/rose_logo.png" alt="Rose-Hulman logo"> -->
-    <div id="signIn">Please sign in to use<br>Workout Planner</div>
-    <div id="firebaseui-auth-container"></div>
+
+  <div id="subTitle" class="container page-container navbar navbar-dark">
+    <div class="navbar-brand" id="pageName">My Account</div>
   </div>
-  <button id="rosefireButton" type="button" class="btn">sign in with Rosefire</button>
 
-  
+  <div id="mainPage" class="container page-container">
+    <!-- <div>General</div> -->
 
+    <button type="button" class="bigButton">
+      Update Personal Information
+      <br> Name, Email Address, Phone Number
+    </button>
+
+    <!-- <button type="button" class="bigButton">
+      Set Date/Time
+    </button> -->
+    <div>
+      <span>Text Notifications</span>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <div>
+      <span>Email Notifications</span>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <button type="button" class="signOut">
+      Sign Out
+    </button>
+
+
+  </div>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
   <script>$("body").bootstrapMaterialDesign();</script>
   <script src="/__/firebase/7.18.0/firebase-app.js"></script>
   <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
-  <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
   <script src="/__/firebase/init.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
-  <script src="scripts/rosefire.min.js"></script>
   <script src="scripts/main.js"></script>
 </body>
 
