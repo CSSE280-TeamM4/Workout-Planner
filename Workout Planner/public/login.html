@@ -16,10 +16,21 @@
     <a class="navbar-brand" href="#">Workout Planner</a>
   </nav>
   <div id="loginPage" class="container page-container">
-    <!-- <img id="roseLogo" src="images/rose_logo.png" alt="Rose-Hulman logo"> -->
-    <div id="signIn">Please sign in to use<br>Workout Planner</div>
+    <div id="signIn">Please Sign In To Use <br>Workout Planner</div>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1"></span>
+      </div>
+      <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+    </div><div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1"></span>
+      </div>
+      <input type="text" class="form-control" placeholder="Password" aria-label="Username" aria-describedby="basic-addon1">
+    </div> 
     <div id="firebaseui-auth-container"></div>
   </div>
+  <button id="EPLogIn" type="button" class="btn">sign in with username</button>
   <button id="rosefireButton" type="button" class="btn">sign in with Rosefire</button>
 
   
