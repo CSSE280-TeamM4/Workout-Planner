@@ -257,3 +257,13 @@ body {font-family: Verdana, sans-serif;}
 #calendar {
   border: 1px solid gray;
 }
+
+#timeButton {
+  text-decoration: underline;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+#updateButton {
+  text-decoration: underline;
+}

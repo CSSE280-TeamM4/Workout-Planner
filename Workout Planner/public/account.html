@@ -20,42 +20,55 @@
   </div>
 
   <div id="mainPage" class="container page-container">
-    <!-- <div>General</div> -->
+    <h4>General</h3>
+      <button id="updateButton" type="button" class="btn">
+        Update Personal Information
+      </button>
+      <small id="emailHelp" class="form-text text-muted">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Name, Email
+        Address, Phone Number</small>
 
-    <button type="button" class="bigButton">
-      Update Personal Information
-      <br> Name, Email Address, Phone Number
-    </button>
+        <button id="timeButton" type="button" class="btn">
+          Set Date/Time
+        </button>
+      <br>
 
-    <!-- <button type="button" class="bigButton">
-      Set Date/Time
-    </button> -->
-    <div>
-      <span>Text Notifications</span>
-      <label class="switch">
-        <input type="checkbox">
-        <span class="slider round"></span>
-      </label>
-    </div>
+      <div class="btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary active">
+          <input type="checkbox" checked autocomplete="off"> Text Notifications
+        </label>
+        <br>
+        <br>
+        <label class="btn btn-secondary active">
+          <input type="checkbox" checked autocomplete="off"> Email Notifications
+        </label>
+      </div>
 
-    <div>
-      <span>Email Notifications</span>
-      <label class="switch">
-        <input type="checkbox">
-        <span class="slider round"></span>
-      </label>
-    </div>
+      <!-- <div>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;Text Notifications</span>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+      </div>
 
-    <button type="button" class="signOut">
-      Sign Out
-    </button>
+      <div>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;Email Notifications</span>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+      </div> -->
+      <br>
+      <button type="button" class="btn btn-danger">Sign Out</button>
 
 
   </div>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
-  <script>$("body").bootstrapMaterialDesign();</script>
+  <script>
+    $("body").bootstrapMaterialDesign();
+  </script>
   <script src="/__/firebase/7.18.0/firebase-app.js"></script>
   <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
