@@ -1,16 +1,16 @@
 /** namespace. */
 var rhit = rhit || {};
 
-rhit.LoginPageController = class {
+this.fbAuthManager = null;
+
+rhit.myAccountController = class {
   constructor() {
-    document.querySelector("#EPLogIn").onclick = (event) => {
-      window.location.href = "/home.html";
-    };
-    document.querySelector("#rosefireButton").onclick = (event) => {
-      window.location.href = "/home.html";
-    };
+    document.querySelector("#signOutButton").onclick = (event) => {
+      rhit.fbAuthManager.signOut();
+      window.location.href = '/';
+    }
   }
-};
+}
 
 rhit.HomePageController = class {
   constructor() {
@@ -35,15 +35,54 @@ rhit.HomePageController = class {
   }
 };
 
+rhit.FBAuthManager = class {
+  constructor() {
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        var displayName = user.displayName;
+        var email = user.email;
+        var phoneNumber = user.phoneNumber;
+        var uid = user.uid;
+      }
+    });
+
+    // const email = document.querySelector("#inputEmail");
+    // const password = document.querySelector("#inputPassword");
+  }
+
+  startFirebaseUI = function () {
+    var uiConfig = {
+      signInSuccessUrl: "/home.html",
+      signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
+    };
+    const ui = new firebaseui.auth.AuthUI(firebase.auth());
+    ui.start(`#firebaseui-auth-container`, uiConfig);
+  };
+
+  signOut = function () {
+    firebase.auth().signOut()
+      .then(function () {
+        console.log("Sign out successful");
+      })
+      .catch(function (error) {
+        console.log("Sign out failed");
+      });
+  };
+};
+
 /* Main */
 /** function and class syntax examples */
 rhit.main = function () {
-	if (document.querySelector("#loginPage")) {
-		new rhit.LoginPageController();
-	}
-	if (document.querySelector("#homePage")){
-		new rhit.HomePageController();
-	}
+  rhit.fbAuthManager = new rhit.FBAuthManager();
+  if (document.querySelector("#loginPage")) {
+    rhit.fbAuthManager.startFirebaseUI();
+  }
+  if (document.querySelector("#homePage")) {
+    new rhit.HomePageController();
+  }
+  if (document.querySelector("#accountPage")) {
+    new rhit.myAccountController();
+  }
 };
 
 rhit.main();
