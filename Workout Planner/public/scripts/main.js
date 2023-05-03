@@ -3,6 +3,8 @@ var rhit = rhit || {};
 
 this.fbAuthManager = null;
 
+let streak = 0;
+
 rhit.myAccountController = class {
   constructor() {
     document.querySelector("#signOutButton").onclick = (event) => {
@@ -32,7 +34,13 @@ rhit.HomePageController = class {
     document.querySelector("#settingsbtn").onclick = (event) => {
       window.location.href = "/account.html";
     };
+    this.updateView();
   }
+
+  updateView() {
+    document.querySelector("#streakText").innerHTML = `You've Completed Your Last <br> ${streak} <br> Workouts`
+  }
+
 };
 
 rhit.FBAuthManager = class {
