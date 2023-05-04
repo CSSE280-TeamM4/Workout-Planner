@@ -38,6 +38,8 @@ rhit.HomePageController = class {
   }
 
   updateView() {
+    let date = new Date().toUTCString().slice(5, 16);
+    document.querySelector("#dateLabel").innerHTML = `${date}`;
     document.querySelector("#streakText").innerHTML = `You've Completed Your Last <br> ${streak} <br> Workouts`
   }
 
