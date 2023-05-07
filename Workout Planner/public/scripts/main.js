@@ -23,7 +23,7 @@ rhit.HomePageController = class {
       window.location.href = "/Calendar.html";
     };
     document.querySelector("#myPlansbtn").onclick = (event) => {
-      window.location.href = "/MyPlans.html";
+      window.location.href = "/myPlans.html";
     };
     document.querySelector("#calendarbtn").onclick = (event) => {
       window.location.href = "/Calendar.html";
