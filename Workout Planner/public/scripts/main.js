@@ -45,6 +45,48 @@ rhit.HomePageController = class {
 
 };
 
+rhit.pastWorkoutsController = class {
+  constructor() {
+    this.collapse();
+  }
+  collapse(){
+    const coll = document.getElementsByClassName("collapsible");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
+  }
+};
+
+rhit.myPlansController = class {
+  constructor() {
+    console.log("cons");
+    this.modal();
+  }
+  modal(){ // will come back to this
+  //   $("#addCustomDialog").on("show.bs.modal", (event) => {
+  //     //pre animation
+  //     document.querySelector("#inputQuote").value = "";
+  //     document.querySelector("#inputMovie").value = "";
+  //   });
+  //   $("#addCustomDialog").on("shown.bs.modal", (event) => {
+  //     //post animation
+  //     document.querySelector("#inputQuote").focus();
+  //     // document.querySelector("#inputMovie").value = "";
+  //   });
+  }
+};
+
+
 rhit.FBAuthManager = class {
   constructor() {
     firebase.auth().onAuthStateChanged(function (user) {
@@ -92,6 +134,13 @@ rhit.main = function () {
   }
   if (document.querySelector("#accountPage")) {
     new rhit.myAccountController();
+  }
+  if (document.querySelector("#pastPage")) {
+    new rhit.pastWorkoutsController();
+  }
+  if (document.querySelector("#plansPage")) {
+    console.log("plans");
+    new rhit.myPlansController();
   }
 };
 
