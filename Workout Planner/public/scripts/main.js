@@ -9,68 +9,86 @@ this.EXERCISES_COLLECTION = "Exercises";
 let weekday = new Date().getDay();
 let streak = 0;
 
-function htmlToElement(html){
-	var template = document.createElement('template');
-	html = html.trim();
-	template.innerHTML = html;
-	return template.content.firstChild;
+function htmlToElement(html) {
+  var template = document.createElement('template');
+  html = html.trim();
+  template.innerHTML = html;
+  return template.content.firstChild;
 }
 
 rhit.MyPlansController = class {
   constructor() {
-  
+    document.querySelector("#customButton").onclick = (event) => {
+      window.location.href = "/customPlans.html";
+    };
+    document.querySelector("#existingButton").onclick = (event) => {
+      window.location.href = "/existingPlans.html";
+    };
 
-  // will come back to this
-  //   $("#addCustomDialog").on("show.bs.modal", (event) => {
-  //     //pre animation
-  //     document.querySelector("#inputQuote").value = "";
-  //     document.querySelector("#inputMovie").value = "";
-  //   });
-  //   $("#addCustomDialog").on("shown.bs.modal", (event) => {
-  //     //post animation
-  //     document.querySelector("#inputQuote").focus();
-  //     // document.querySelector("#inputMovie").value = "";
-  //   });
+
+    // will come back to this
+    //   $("#addCustomDialog").on("show.bs.modal", (event) => {
+    //     //pre animation
+    //     document.querySelector("#inputQuote").value = "";
+    //     document.querySelector("#inputMovie").value = "";
+    //   });
+    //   $("#addCustomDialog").on("shown.bs.modal", (event) => {
+    //     //post animation
+    //     document.querySelector("#inputQuote").focus();
+    //     // document.querySelector("#inputMovie").value = "";
+    //   });
     rhit.myPlansManager.beginListening(this.updateList.bind(this));
 
   }
-  _createCard(wp){
-		return htmlToElement(
+  _createCard(wp) {
+    //brennan's code
+//     return htmlToElement(
+//       ` <div style="width: 18rem;">
+//       <div class="card-body">
+//         <h5 class="card-title">${wp.name}</h5>
+//         <a href="#" class="card-link">Edit</a>
+//         <a href="#" class="card-link">Favorite</a>
+//         <a href="#" class="card-link">Delete</a>
+//       </div>
+//     </div>`);
+
+    return htmlToElement(
       ` <div style="width: 18rem;">
       <div class="card-body">
         <h5 class="card-title">${wp.name}</h5>
         <a href="#" class="card-link">Edit</a>
-        <a href="#" class="card-link">Favorite</a>
+        <span>Favorite</span>
+        <input type="radio" id="favorite" name="fav_plan" value="${wp.name}">
         <a href="#" class="card-link">Delete</a>
       </div>
     </div>`);
-	}
+  }
 
-	updateList () {
+  updateList() {
     //TODO: ONLY SHOW PLANS WITH USER UID
 
-		const newList = htmlToElement(`<div id="plansList"></div>`);
+    const newList = htmlToElement(`<div id="plansList"></div>`);
 
-		for(let i = 0; i < rhit.myPlansManager.length; i ++){
-			const wp = rhit.myPlansManager.getPlanAtIndex(i);
-			const newCard = this._createCard(wp);
+    for (let i = 0; i < rhit.myPlansManager.length; i++) {
+      const wp = rhit.myPlansManager.getPlanAtIndex(i);
+      const newCard = this._createCard(wp);
 
       //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
 
-			// newCard.onclick = (event) => {
-			// 	window.location.href = `/moviequote.html?id=${mq.id}`;
-			// }
+      // newCard.onclick = (event) => {
+      // 	window.location.href = `/moviequote.html?id=${mq.id}`;
+      // }
 
-			newList.appendChild(newCard);
-		}
+      newList.appendChild(newCard);
+    }
 
-		const oldList = document.querySelector("#plansList");
-		oldList.removeAttribute("id");
-		oldList.hidden = true;
+    const oldList = document.querySelector("#plansList");
+    oldList.removeAttribute("id");
+    oldList.hidden = true;
 
-		oldList.parentElement.appendChild(newList);
-	}
-  
+    oldList.parentElement.appendChild(newList);
+  }
+
 };
 
 rhit.TodaysWorkoutController = class {
@@ -83,55 +101,61 @@ rhit.TodaysWorkoutController = class {
 rhit.MyPlansManager = class {
   constructor() {
     this._documentSnapshots = [];
-		this._ref = firebase.firestore().collection("Workout Plans");
-		this._unsubscribe = null;
+    this._ref = firebase.firestore().collection("Workout Plans");
+    this._unsubscribe = null;
   }
-  add(name, goal, diff, days, favorite, uid, exercises){
-		this._ref.add({
-			["Name"]: name,
+  add(name, goal, diff, days, favorite, uid, exercises) {
+    this._ref.add({
+      ["Name"]: name,
       ["Goal"]: goal,
       ["Difficulty"]: diff,
       ["Days/Week"]: days,
       ["favorite"]: favorite,
       ["uid"]: uid,
       ["Weekday"]: exercises
-		});
-		
-	}
+    });
+
+  }
   addExisting(plan) {
     //TOOD CALL ADD WITH PARAMETERS OF GIVEN PLAN AND USER UID
   }
-	beginListening(changeListener) {
-		this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
-			this._documentSnapshots = querySnapshot.docs;
-			changeListener();
-		})
-	}
-	stopListening() {
-		this._unsubscribe();
-	}
-  update() { 
+  beginListening(changeListener) {
+    this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
+      this._documentSnapshots = querySnapshot.docs;
+      changeListener();
+    })
+  }
+  stopListening() {
+    this._unsubscribe();
+  }
+  update() {
     //TODO: WRITE EDIT PLAN METHOD
   }
-	delete(id){
+  delete(id) {
     //TODO: WRITE DELETE PLAN METHOD
   }
-	get length() {
-		return this._documentSnapshots.length;
-	}
-	getPlanAtIndex(index){
-		const docSnapshot = this._documentSnapshots[index];
+  get length() {
+    return this._documentSnapshots.length;
+  }
+  getPlanAtIndex(index) {
+    const docSnapshot = this._documentSnapshots[index];
     const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"));
-    return wp
-	}
+    return wp;
+  }
 }
 
-rhit.myAccountController = class {
+rhit.MyAccountController = class {
   constructor() {
     document.querySelector("#signOutButton").onclick = (event) => {
       rhit.fbAuthManager.signOut();
       window.location.href = '/';
     }
+  }
+}
+
+rhit.CustomPlanController = class {
+  constructor() {
+
   }
 }
 
@@ -166,16 +190,16 @@ rhit.HomePageController = class {
 
 };
 
-rhit.pastWorkoutsController = class {
+rhit.PastWorkoutsController = class {
   constructor() {
     this.collapse();
   }
-  collapse(){
+  collapse() {
     const coll = document.getElementsByClassName("collapsible");
     var i;
-    
+
     for (i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function() {
+      coll[i].addEventListener("click", function () {
         this.classList.toggle("active");
         var content = this.nextElementSibling;
         if (content.style.display === "block") {
@@ -189,13 +213,134 @@ rhit.pastWorkoutsController = class {
 };
 
 rhit.WorkoutPlan = class {
-	constructor(id, name) {
+  constructor(id, name) {
     this.id = id;
-		this.name = name;
-	}
+    this.name = name;
+    
+  }
 }
 
+rhit.ExistingPlan = class {
+  constructor(id, name, goal, level, sessions) {
+    this.id = id;
+    this.name = name;
+    this.goal = goal;
+    this.level = level;
+    this.sessions = sessions;
+    
+  }
+}
 
+rhit.ExistingPlansController = class {
+  constructor() {
+
+
+    // will come back to this
+    //   $("#addCustomDialog").on("show.bs.modal", (event) => {
+    //     //pre animation
+    //     document.querySelector("#inputQuote").value = "";
+    //     document.querySelector("#inputMovie").value = "";
+    //   });
+    //   $("#addCustomDialog").on("shown.bs.modal", (event) => {
+    //     //post animation
+    //     document.querySelector("#inputQuote").focus();
+    //     // document.querySelector("#inputMovie").value = "";
+    //   });
+    rhit.existingPlansManager.beginListening(this.updateList.bind(this));
+
+  }
+  _createCard(wp) {
+    //brennan's code
+//     return htmlToElement(
+//       ` <div style="width: 18rem;">
+//       <div class="card-body">
+//         <h5 class="card-title">${wp.name}</h5>
+//         <a href="#" class="card-link">Edit</a>
+//         <a href="#" class="card-link">Favorite</a>
+//         <a href="#" class="card-link">Delete</a>
+//       </div>
+//     </div>`);
+
+    return htmlToElement(
+      ` <div style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">${wp.name}</h5>
+        <h6 class="subtitle">${wp.level}</h6>
+        <h6 class="subtitle">${wp.sessions}</h6>
+        <h6 class="subtitle">${wp.goal}</h6>
+      </div>
+    </div>`);
+  }
+
+  updateList() {
+    //TODO: ONLY SHOW PLANS WITH USER UID
+
+    const newList = htmlToElement(`<div id="plansList"></div>`);
+
+    for (let i = 0; i < rhit.existingPlansManager.length; i++) {
+      const wp = rhit.existingPlansManager.getPlanAtIndex(i);
+      const newCard = this._createCard(wp);
+
+      //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
+
+      // newCard.onclick = (event) => {
+      // 	window.location.href = `/moviequote.html?id=${mq.id}`;
+      // }
+
+      newList.appendChild(newCard);
+    }
+
+    const oldList = document.querySelector("#existingPlansList");
+    oldList.removeAttribute("id");
+    oldList.hidden = true;
+
+    oldList.parentElement.appendChild(newList);
+  }
+
+};
+
+rhit.ExistingPlansManager = class {
+  constructor() {
+    this._documentSnapshots = [];
+    this._ref = firebase.firestore().collection("Existing Plans");
+    this._unsubscribe = null;
+  }
+  add(name, goal, level, sessions) {
+    this._ref.add({
+      ["name"]: name,
+      ["goal"]: goal,
+      ["level"]: level,
+      ["sessions"]: sessions,
+    });
+
+  }
+  addExisting(plan) {
+    //TOOD CALL ADD WITH PARAMETERS OF GIVEN PLAN AND USER UID
+  }
+  beginListening(changeListener) {
+    this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
+      this._documentSnapshots = querySnapshot.docs;
+      changeListener();
+    })
+  }
+  stopListening() {
+    this._unsubscribe();
+  }
+  update() {
+    //TODO: WRITE EDIT PLAN METHOD
+  }
+  delete(id) {
+    //TODO: WRITE DELETE PLAN METHOD
+  }
+  get length() {
+    return this._documentSnapshots.length;
+  }
+  getPlanAtIndex(index) {
+    const docSnapshot = this._documentSnapshots[index];
+    const wp = new rhit.ExistingPlan(docSnapshot.id, docSnapshot.get("name"), docSnapshot.get("goal"), docSnapshot.get("level"), docSnapshot.get("sessions"));
+    return wp;
+  }
+}
 
 
 rhit.FBAuthManager = class {
@@ -244,16 +389,24 @@ rhit.main = function () {
     new rhit.HomePageController();
   }
   if (document.querySelector("#accountPage")) {
-    new rhit.myAccountController();
+    new rhit.MyAccountController();
   }
   if (document.querySelector("#pastPage")) {
-    new rhit.pastWorkoutsController();
+    new rhit.PastWorkoutsController();
   }
   if (document.querySelector("#plansPage")) {
     this.myPlansManager = new rhit.MyPlansManager();
     new rhit.MyPlansController();
-    
   }
+  if (document.querySelector("#customPage")) {
+    new rhit.CustomPlanController();
+  }
+  if (document.querySelector("#existingPage")) {
+    this.existingPlansManager = new rhit.ExistingPlansManager();
+    new rhit.ExistingPlansController();
+  }
+
+
 };
 
 rhit.main();

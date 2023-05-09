@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+  <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <title>Workout Planner</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-dark fixed-top">
+    <a class="navbar-brand" href="/home.html">Workout Planner</a>
+  </nav>
+
+  <div id="subTitle" class="container page-container navbar navbar-dark">
+    <div class="navbar-brand" id="pageName">Create Custom Plan</div>
+  </div>
+
+
+  <div id="customPage" class="container page-container">
+
+
+    <h3>Monday</h3>
+    <button id="monButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+      <i class="material-icons">add</i>
+    </button>
+    <h3>Tuesday</h3>
+    <button id="tueButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+      <i class="material-icons">add</i>
+    </button>
+    <h3>Wednesday</h3>
+    <button id="wedButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+      <i class="material-icons">add</i>
+    </button>
+    <h3>Thursday</h3>
+    <button id="thuButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+      <i class="material-icons">add</i>
+    </button>
+    <h3>Friday</h3>
+    <button id="friButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+      <i class="material-icons">add</i>
+    </button>
+    <h3>Saturday</h3>
+    <button id="satButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+      <i class="material-icons">add</i>
+    </button>
+    <h3>Sunday</h3>
+    <button id="sunButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+      <i class="material-icons">add</i>
+    </button>
+
+    <div class="modal fade" id="addCustomDialog" tabindex="-1" role="dialog" aria-labelledby="Add custom dialog"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Create Custom Plan</h5>
+          </div>
+          <div class="modal-body">
+            <div id="exerciseName">
+              <label for="exercise-names">Choose an exercise:</label>
+              <select onchange="yesnoCheck(this);" name="exercise-names" id="exercise-names">
+                <option value="custom" selected>Custom</option>
+                <option value="chestPress">Chest Press</option>
+                <option value="benchPress">Bench Press</option>
+                <option value="squats">Squats</option>
+              </select>
+
+              <div id="ifYes" style="display: block;">
+                <label for="exercise-Name">Exercise Name</label> <input type="text" id="car" name="car" /><br />
+              </div>
+              
+              <!-- a little scuffed but this works -->
+              <script type="text/javascript">
+                function yesnoCheck(that) {
+                  if (that.value == "custom") {
+                    document.getElementById("ifYes").style.display = "block";
+                  } else {
+                    document.getElementById("ifYes").style.display = "none";
+                  }
+                }
+              </script>
+            </div>
+
+            <div class="form-group bmd-form-group">
+              <label for="inputSets" class="bmd-label-floating">Target Sets</label>
+              <input type="number" class="form-control" id="inputSets">
+            </div>
+            <div class="form-group">
+              <label for="inputReps" class="bmd-label-floating">Target Repetitions Per Set</label>
+              <input type="number" class="form-control" id="inputReps">
+            </div>
+            <div class="form-group">
+              <label for="inputWeight" class="bmd-label-floating">Target Weight (lbs)</label>
+              <input type="number" class="form-control" id="inputWeight">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+            <button id="submitAddCustom" type="button" class="btn btn-primary" data-dismiss="modal">CREATE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+  </div>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/popper.js"></script>
+  <script src="scripts/bootstrap-material-design.js"></script>
+  <script>
+    $("body").bootstrapMaterialDesign();
+  </script>
+  <script src="/__/firebase/7.18.0/firebase-app.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
+  <script src="/__/firebase/init.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+
+</html>
