@@ -3,6 +3,7 @@ var rhit = rhit || {};
 
 rhit.fbAuthManager = null;
 rhit.myPlansManager = null;
+rhit.existingPlansManager = null;
 rhit.PLANS_COLLECTION = "Workout Plans";
 rhit.EXERCISES_COLLECTION = "Exercises";
 rhit.DAYS_KEY = "Days/Week";
@@ -11,7 +12,7 @@ let weekday = new Date().getDay();
 let streak = 0;
 
 function htmlToElement(html) {
-  var template = document.createElement('template');
+  var template = document.createElement("template");
   html = html.trim();
   template.innerHTML = html;
   return template.content.firstChild;
@@ -31,7 +32,7 @@ rhit.WorkoutPlan = class {
     this.favorite = favorite;
     this.exercises = exercises;
   }
-}
+};
 
 rhit.MyPlansController = class {
   constructor() {
@@ -41,7 +42,6 @@ rhit.MyPlansController = class {
     document.querySelector("#existingButton").onclick = (event) => {
       window.location.href = "/existingPlans.html";
     };
-
 
     // will come back to this
     //   $("#addCustomDialog").on("show.bs.modal", (event) => {
@@ -55,19 +55,18 @@ rhit.MyPlansController = class {
     //     // document.querySelector("#inputMovie").value = "";
     //   });
     rhit.myPlansManager.beginListening(this.updateList.bind(this));
-
   }
   _createCard(wp) {
     //brennan's code
-//     return htmlToElement(
-//       ` <div style="width: 18rem;">
-//       <div class="card-body">
-//         <h5 class="card-title">${wp.name}</h5>
-//         <a href="#" class="card-link">Edit</a>
-//         <a href="#" class="card-link">Favorite</a>
-//         <a href="#" class="card-link">Delete</a>
-//       </div>
-//     </div>`);
+    //     return htmlToElement(
+    //       ` <div style="width: 18rem;">
+    //       <div class="card-body">
+    //         <h5 class="card-title">${wp.name}</h5>
+    //         <a href="#" class="card-link">Edit</a>
+    //         <a href="#" class="card-link">Favorite</a>
+    //         <a href="#" class="card-link">Delete</a>
+    //       </div>
+    //     </div>`);
 
     return htmlToElement(
       ` <div style="width: 18rem;">
@@ -78,7 +77,8 @@ rhit.MyPlansController = class {
         <input type="radio" id="favorite" name="fav_plan" value="${wp.name}">
         <a href="#" class="card-link">Delete</a>
       </div>
-    </div>`);
+    </div>`
+    );
   }
 
   updateList() {
@@ -90,15 +90,15 @@ rhit.MyPlansController = class {
       const wp = rhit.myPlansManager.getPlanAtIndex(i);
       console.log("wp.uid: " + wp.uid + " auth id: " + rhit.fbAuthManager.uid);
       if (wp.uid == rhit.fbAuthManager.uid) {
-      const newCard = this._createCard(wp);
+        const newCard = this._createCard(wp);
 
-      //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
+        //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
 
-      // newCard.onclick = (event) => {
-      // 	window.location.href = `/moviequote.html?id=${mq.id}`;
-      // }
+        // newCard.onclick = (event) => {
+        // 	window.location.href = `/moviequote.html?id=${mq.id}`;
+        // }
 
-      newList.appendChild(newCard);
+        newList.appendChild(newCard);
       }
     }
 
@@ -108,21 +108,18 @@ rhit.MyPlansController = class {
 
     oldList.parentElement.appendChild(newList);
   }
-
 };
 
 rhit.TodaysWorkoutController = class {
-  constructor() {
-    
-  }
-}
-
+  constructor() {}
+};
 
 rhit.MyPlansManager = class {
   constructor() {
     this._documentSnapshots = [];
     this._ref = firebase.firestore().collection("Workout Plans");
     this._unsubscribe = null;
+    //this._ref.add({["Test:"]:"test", ["uid"]: "5JmBVq9zqEcCv5ff9qg1NUCp6BZ2"});
   }
   add(name, goal, diff, days, favorite, uid, time, exercises) {
     this._ref.add({
@@ -134,15 +131,26 @@ rhit.MyPlansManager = class {
       ["uid"]: uid,
       ["time"]: time,
       ["favorite"]: favorite,
-      ["Weekday"]: exercises
+      ["Weekday"]: exercises,
     });
-    console.log("Added");
+  }
+  addExisting(wp) {
+    this.add(
+      wp.name,
+      wp.goal,
+      wp.level,
+      wp.sessions,
+      wp.favorite,
+      rhit.fbAuthManager.uid,
+      wp.time,
+      wp.exercises
+    );
   }
   beginListening(changeListener) {
     this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
       this._documentSnapshots = querySnapshot.docs;
       changeListener();
-    })
+    });
   }
   stopListening() {
     this._unsubscribe();
@@ -158,26 +166,34 @@ rhit.MyPlansManager = class {
   }
   getPlanAtIndex(index) {
     const docSnapshot = this._documentSnapshots[index];
-    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"), docSnapshot.get("Goal"), docSnapshot.get("Difficulty"), docSnapshot.get("Days"), docSnapshot.get("uid"), docSnapshot.get("time"), docSnapshot.get("favorite"), docSnapshot.get("Weekday"));
+    const wp = new rhit.WorkoutPlan(
+      docSnapshot.id,
+      docSnapshot.get("Name"),
+      docSnapshot.get("Goal"),
+      docSnapshot.get("Difficulty"),
+      docSnapshot.get("Days"),
+      docSnapshot.get("uid"),
+      docSnapshot.get("time"),
+      docSnapshot.get("favorite"),
+      docSnapshot.get("Weekday")
+    );
     console.log(wp.exercises);
     return wp;
   }
-}
+};
 
 rhit.MyAccountController = class {
   constructor() {
     document.querySelector("#signOutButton").onclick = (event) => {
       rhit.fbAuthManager.signOut();
-      window.location.href = '/';
-    }
+      window.location.href = "/";
+    };
   }
-}
+};
 
 rhit.CustomPlanController = class {
-  constructor() {
-
-  }
-}
+  constructor() {}
+};
 
 rhit.HomePageController = class {
   constructor() {
@@ -205,9 +221,10 @@ rhit.HomePageController = class {
   updateView() {
     let date = new Date().toUTCString().slice(5, 16);
     document.querySelector("#dateLabel").innerHTML = `${date}`;
-    document.querySelector("#streakText").innerHTML = `You've Completed Your Last <br> ${streak} <br> Workouts`
+    document.querySelector(
+      "#streakText"
+    ).innerHTML = `You've Completed Your Last <br> ${streak} <br> Workouts`;
   }
-
 };
 
 rhit.PastWorkoutsController = class {
@@ -234,8 +251,9 @@ rhit.PastWorkoutsController = class {
 
 rhit.ExistingPlansController = class {
   constructor() {
-
-
+    document.querySelector("#existingDone").onclick = (event) => {
+      window.location.href = '/myPlans.html';
+    }
     // will come back to this
     //   $("#addCustomDialog").on("show.bs.modal", (event) => {
     //     //pre animation
@@ -248,19 +266,18 @@ rhit.ExistingPlansController = class {
     //     // document.querySelector("#inputMovie").value = "";
     //   });
     rhit.existingPlansManager.beginListening(this.updateList.bind(this));
-
   }
   _createCard(wp) {
     //brennan's code
-//     return htmlToElement(
-//       ` <div style="width: 18rem;">
-//       <div class="card-body">
-//         <h5 class="card-title">${wp.name}</h5>
-//         <a href="#" class="card-link">Edit</a>
-//         <a href="#" class="card-link">Favorite</a>
-//         <a href="#" class="card-link">Delete</a>
-//       </div>
-//     </div>`);
+    //     return htmlToElement(
+    //       ` <div style="width: 18rem;">
+    //       <div class="card-body">
+    //         <h5 class="card-title">${wp.name}</h5>
+    //         <a href="#" class="card-link">Edit</a>
+    //         <a href="#" class="card-link">Favorite</a>
+    //         <a href="#" class="card-link">Delete</a>
+    //       </div>
+    //     </div>`);
 
     return htmlToElement(
       ` <div style="width: 18rem;">
@@ -271,26 +288,25 @@ rhit.ExistingPlansController = class {
         <h6 class="subtitle">goal: ${wp.goal}</h6>
         <a href="#" class="card-link">Add</a>
       </div>
-    </div>`);
+    </div>`
+    );
   }
 
   updateList() {
-
-    const newList = htmlToElement(`<div id="plansList"></div>`);
+    const newList = htmlToElement(`<div id="existingPlansList"></div>`);
 
     for (let i = 0; i < rhit.existingPlansManager.length; i++) {
       const wp = rhit.existingPlansManager.getPlanAtIndex(i);
-      const newCard = this._createCard(wp);
-      console.log(wp.exercises);
+      if (wp.uid == "") {
+        const newCard = this._createCard(wp);
+        
+        newCard.onclick = (event) => {
+          rhit.myPlansManager.addExisting(wp);
+          //window.location.href = `/myPlans.html`;
+        };
 
-  
-
-      newCard.onclick = (event) => {
-        rhit.myPlansManager.add(wp.name, wp.goal, wp.level, wp.sessions, wp.favorite, rhit.fbAuthManager.uid, wp.time, wp.exercises);
-      	window.location.href = `/myPlans.html`;
+        newList.appendChild(newCard);
       }
-
-      newList.appendChild(newCard);
     }
 
     const oldList = document.querySelector("#existingPlansList");
@@ -299,7 +315,6 @@ rhit.ExistingPlansController = class {
 
     oldList.parentElement.appendChild(newList);
   }
-
 };
 
 rhit.ExistingPlansManager = class {
@@ -322,12 +337,12 @@ rhit.ExistingPlansManager = class {
   //   });
 
   // }
-  
+
   beginListening(changeListener) {
     this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
       this._documentSnapshots = querySnapshot.docs;
       changeListener();
-    })
+    });
   }
   stopListening() {
     this._unsubscribe();
@@ -343,11 +358,20 @@ rhit.ExistingPlansManager = class {
   }
   getPlanAtIndex(index) {
     const docSnapshot = this._documentSnapshots[index];
-    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"), docSnapshot.get("Goal"), docSnapshot.get("Difficulty"), docSnapshot.get("Days"), docSnapshot.get("uid"), docSnapshot.get("time"), docSnapshot.get("favorite"), docSnapshot.get("Weekday"));
+    const wp = new rhit.WorkoutPlan(
+      docSnapshot.id,
+      docSnapshot.get("Name"),
+      docSnapshot.get("Goal"),
+      docSnapshot.get("Difficulty"),
+      docSnapshot.get("Days"),
+      docSnapshot.get("uid"),
+      docSnapshot.get("time"),
+      docSnapshot.get("favorite"),
+      docSnapshot.get("Weekday")
+    );
     return wp;
   }
-}
-
+};
 
 rhit.FBAuthManager = class {
   constructor() {
@@ -356,10 +380,10 @@ rhit.FBAuthManager = class {
     // const password = document.querySelector("#inputPassword");
   }
   beginListening() {
-		firebase.auth().onAuthStateChanged((user) => {
-			this._user = user;
-		});
-	}
+    firebase.auth().onAuthStateChanged((user) => {
+      this._user = user;
+    });
+  }
 
   startFirebaseUI = function () {
     var uiConfig = {
@@ -371,14 +395,16 @@ rhit.FBAuthManager = class {
   };
 
   signOut = function () {
-    firebase.auth().signOut()
+    firebase
+      .auth()
+      .signOut()
       .then(function () {
         console.log("Sign out successful");
       })
       .catch(function (error) {
         console.log("Sign out failed");
       });
-  };  
+  };
   get uid() {
     return this._user.uid;
   }
@@ -412,8 +438,6 @@ rhit.main = function () {
     this.existingPlansManager = new rhit.ExistingPlansManager();
     new rhit.ExistingPlansController();
   }
-
-
 };
 
 rhit.main();
