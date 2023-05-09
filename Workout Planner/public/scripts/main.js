@@ -1,10 +1,11 @@
 /** namespace. */
 var rhit = rhit || {};
 
-this.fbAuthManager = null;
-this.myPlansManager = null;
-this.PLANS_COLLECTION = "Workout Plans";
-this.EXERCISES_COLLECTION = "Exercises";
+rhit.fbAuthManager = null;
+rhit.myPlansManager = null;
+rhit.PLANS_COLLECTION = "Workout Plans";
+rhit.EXERCISES_COLLECTION = "Exercises";
+rhit.DAYS_KEY = "Days/Week";
 
 let weekday = new Date().getDay();
 let streak = 0;
@@ -71,6 +72,8 @@ rhit.MyPlansController = class {
 
     for (let i = 0; i < rhit.myPlansManager.length; i++) {
       const wp = rhit.myPlansManager.getPlanAtIndex(i);
+      console.log("wp.uid: " + wp.uid + " auth id: " + rhit.fbAuthManager.uid);
+      if (wp.uid == rhit.fbAuthManager.uid) {
       const newCard = this._createCard(wp);
 
       //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
@@ -80,6 +83,7 @@ rhit.MyPlansController = class {
       // }
 
       newList.appendChild(newCard);
+      }
     }
 
     const oldList = document.querySelector("#plansList");
@@ -116,9 +120,6 @@ rhit.MyPlansManager = class {
     });
 
   }
-  addExisting(plan) {
-    //TOOD CALL ADD WITH PARAMETERS OF GIVEN PLAN AND USER UID
-  }
   beginListening(changeListener) {
     this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
       this._documentSnapshots = querySnapshot.docs;
@@ -139,7 +140,7 @@ rhit.MyPlansManager = class {
   }
   getPlanAtIndex(index) {
     const docSnapshot = this._documentSnapshots[index];
-    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"));
+    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"), docSnapshot.get("Goal"), docSnapshot.get("Difficulty"), docSnapshot.get("Days"), docSnapshot.get("uid"));
     return wp;
   }
 }
@@ -213,12 +214,13 @@ rhit.PastWorkoutsController = class {
 };
 
 rhit.WorkoutPlan = class {
-  constructor(id, name, goal, level, sessions) {
+  constructor(id, name, goal, level, sessions, uid) {
     this.id = id;
     this.name = name;
     this.goal = goal;
     this.level = level;
     this.sessions = sessions;
+    this.uid = uid;
   }
 }
 
@@ -259,14 +261,13 @@ rhit.ExistingPlansController = class {
       <div class="card-body">
         <h5 class="card-title">${wp.name}</h5>
         <h6 class="subtitle">${wp.level}</h6>
-        <h6 class="subtitle">${wp.sessions}</h6>
-        <h6 class="subtitle">${wp.goal}</h6>
+        <h6 class="subtitle">${wp.sessions} days per week</h6>
+        <h6 class="subtitle">goal: ${wp.goal}</h6>
       </div>
     </div>`);
   }
 
   updateList() {
-    //TODO: ONLY SHOW PLANS WITH USER UID
 
     const newList = htmlToElement(`<div id="plansList"></div>`);
 
@@ -274,7 +275,7 @@ rhit.ExistingPlansController = class {
       const wp = rhit.existingPlansManager.getPlanAtIndex(i);
       const newCard = this._createCard(wp);
 
-      //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
+      //TODO: ADD LISTENER FOR ADD BUTTON
 
       // newCard.onclick = (event) => {
       // 	window.location.href = `/moviequote.html?id=${mq.id}`;
@@ -330,7 +331,7 @@ rhit.ExistingPlansManager = class {
   }
   getPlanAtIndex(index) {
     const docSnapshot = this._documentSnapshots[index];
-    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("name"), docSnapshot.get("goal"), docSnapshot.get("level"), docSnapshot.get("sessions"));
+    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"), docSnapshot.get("Goal"), docSnapshot.get("Difficulty"), docSnapshot.get("Days"), docSnapshot.get("uid"));
     return wp;
   }
 }
@@ -338,18 +339,15 @@ rhit.ExistingPlansManager = class {
 
 rhit.FBAuthManager = class {
   constructor() {
-    firebase.auth().onAuthStateChanged(function (user) {
-      if (user) {
-        var displayName = user.displayName;
-        var email = user.email;
-        var phoneNumber = user.phoneNumber;
-        var uid = user.uid;
-      }
-    });
-
+    this._user = null;
     // const email = document.querySelector("#inputEmail");
     // const password = document.querySelector("#inputPassword");
   }
+  beginListening() {
+		firebase.auth().onAuthStateChanged((user) => {
+			this._user = user;
+		});
+	}
 
   startFirebaseUI = function () {
     var uiConfig = {
@@ -368,15 +366,19 @@ rhit.FBAuthManager = class {
       .catch(function (error) {
         console.log("Sign out failed");
       });
-  };
+  };  
+  get uid() {
+    return this._user.uid;
+  }
 };
 
 /* Main */
 /** function and class syntax examples */
 rhit.main = function () {
   rhit.fbAuthManager = new rhit.FBAuthManager();
+  rhit.fbAuthManager.beginListening();
   if (document.querySelector("#loginPage")) {
-    rhit.fbAuthManager.startFirebaseUI();
+    this.fbAuthManager.startFirebaseUI();
   }
   if (document.querySelector("#homePage")) {
     new rhit.HomePageController();
