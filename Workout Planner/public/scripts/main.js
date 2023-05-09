@@ -35,11 +35,14 @@ rhit.MyPlansController = class {
   }
   _createCard(wp){
 		return htmlToElement(
-      `<div class="card">
-        <div class="card-body">
-          <h5 class="card-title">${wp.name}</h5>
-        </div>
-      </div>`);
+      ` <div style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">${wp.name}</h5>
+        <a href="#" class="card-link">Edit</a>
+        <a href="#" class="card-link">Favorite</a>
+        <a href="#" class="card-link">Delete</a>
+      </div>
+    </div>`);
 	}
 
 	updateList () {
