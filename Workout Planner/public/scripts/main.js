@@ -6,6 +6,7 @@ this.myPlansManager = null;
 this.PLANS_COLLECTION = "Workout Plans";
 this.EXERCISES_COLLECTION = "Exercises";
 
+let weekday = new Date().getDay();
 let streak = 0;
 
 function htmlToElement(html){
@@ -71,6 +72,12 @@ rhit.MyPlansController = class {
 	}
   
 };
+
+rhit.TodaysWorkoutController = class {
+  constructor() {
+    
+  }
+}
 
 
 rhit.MyPlansManager = class {
