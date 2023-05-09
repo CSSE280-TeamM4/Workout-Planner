@@ -16,6 +16,22 @@ function htmlToElement(html) {
   template.innerHTML = html;
   return template.content.firstChild;
 }
+//
+// WORKOUT PLAN OBJECT
+//
+rhit.WorkoutPlan = class {
+  constructor(id, name, goal, level, sessions, uid, time, favorite, exercises) {
+    this.id = id;
+    this.name = name;
+    this.goal = goal;
+    this.level = level;
+    this.sessions = sessions;
+    this.uid = uid;
+    this.time = time;
+    this.favorite = favorite;
+    this.exercises = exercises;
+  }
+}
 
 rhit.MyPlansController = class {
   constructor() {
@@ -108,7 +124,7 @@ rhit.MyPlansManager = class {
     this._ref = firebase.firestore().collection("Workout Plans");
     this._unsubscribe = null;
   }
-  add(name, goal, diff, days, favorite, uid, exercises) {
+  add(name, goal, diff, days, favorite, uid, time, exercises) {
     this._ref.add({
       ["Name"]: name,
       ["Goal"]: goal,
@@ -116,9 +132,11 @@ rhit.MyPlansManager = class {
       ["Days/Week"]: days,
       ["favorite"]: favorite,
       ["uid"]: uid,
+      ["time"]: time,
+      ["favorite"]: favorite,
       ["Weekday"]: exercises
     });
-
+    console.log("Added");
   }
   beginListening(changeListener) {
     this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
@@ -140,7 +158,8 @@ rhit.MyPlansManager = class {
   }
   getPlanAtIndex(index) {
     const docSnapshot = this._documentSnapshots[index];
-    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"), docSnapshot.get("Goal"), docSnapshot.get("Difficulty"), docSnapshot.get("Days"), docSnapshot.get("uid"));
+    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"), docSnapshot.get("Goal"), docSnapshot.get("Difficulty"), docSnapshot.get("Days"), docSnapshot.get("uid"), docSnapshot.get("time"), docSnapshot.get("favorite"), docSnapshot.get("Weekday"));
+    console.log(wp.exercises);
     return wp;
   }
 }
@@ -213,19 +232,6 @@ rhit.PastWorkoutsController = class {
   }
 };
 
-rhit.WorkoutPlan = class {
-  constructor(id, name, goal, level, sessions, uid) {
-    this.id = id;
-    this.name = name;
-    this.goal = goal;
-    this.level = level;
-    this.sessions = sessions;
-    this.uid = uid;
-  }
-}
-
-
-
 rhit.ExistingPlansController = class {
   constructor() {
 
@@ -263,6 +269,7 @@ rhit.ExistingPlansController = class {
         <h6 class="subtitle">${wp.level}</h6>
         <h6 class="subtitle">${wp.sessions} days per week</h6>
         <h6 class="subtitle">goal: ${wp.goal}</h6>
+        <a href="#" class="card-link">Add</a>
       </div>
     </div>`);
   }
@@ -274,12 +281,14 @@ rhit.ExistingPlansController = class {
     for (let i = 0; i < rhit.existingPlansManager.length; i++) {
       const wp = rhit.existingPlansManager.getPlanAtIndex(i);
       const newCard = this._createCard(wp);
+      console.log(wp.exercises);
 
-      //TODO: ADD LISTENER FOR ADD BUTTON
+  
 
-      // newCard.onclick = (event) => {
-      // 	window.location.href = `/moviequote.html?id=${mq.id}`;
-      // }
+      newCard.onclick = (event) => {
+        rhit.myPlansManager.add(wp.name, wp.goal, wp.level, wp.sessions, wp.favorite, rhit.fbAuthManager.uid, wp.time, wp.exercises);
+      	window.location.href = `/myPlans.html`;
+      }
 
       newList.appendChild(newCard);
     }
@@ -299,18 +308,21 @@ rhit.ExistingPlansManager = class {
     this._ref = firebase.firestore().collection("Workout Plans");
     this._unsubscribe = null;
   }
-  add(name, goal, level, sessions) {
-    this._ref.add({
-      ["name"]: name,
-      ["goal"]: goal,
-      ["level"]: level,
-      ["sessions"]: sessions,
-    });
+  // add(name, goal, level, sessions) {
+  //   this._ref.add({
+  //     ["Name"]: name,
+  //     ["Goal"]: goal,
+  //     ["Difficulty"]: diff,
+  //     ["Days/Week"]: days,
+  //     ["favorite"]: favorite,
+  //     ["uid"]: uid,
+  //     ["time"]: time,
+  //     ["favorite"]: favorite,
+  //     ["Weekday"]: exercises
+  //   });
 
-  }
-  addExisting(plan) {
-    //TOOD CALL ADD WITH PARAMETERS OF GIVEN PLAN AND USER UID
-  }
+  // }
+  
   beginListening(changeListener) {
     this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
       this._documentSnapshots = querySnapshot.docs;
@@ -320,18 +332,18 @@ rhit.ExistingPlansManager = class {
   stopListening() {
     this._unsubscribe();
   }
-  update() {
-    //TODO: WRITE EDIT PLAN METHOD
-  }
-  delete(id) {
-    //TODO: WRITE DELETE PLAN METHOD
-  }
+  // update() {
+  //   //TODO: WRITE EDIT PLAN METHOD
+  // }
+  // delete(id) {
+  //   //TODO: WRITE DELETE PLAN METHOD
+  // }
   get length() {
     return this._documentSnapshots.length;
   }
   getPlanAtIndex(index) {
     const docSnapshot = this._documentSnapshots[index];
-    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"), docSnapshot.get("Goal"), docSnapshot.get("Difficulty"), docSnapshot.get("Days"), docSnapshot.get("uid"));
+    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("Name"), docSnapshot.get("Goal"), docSnapshot.get("Difficulty"), docSnapshot.get("Days"), docSnapshot.get("uid"), docSnapshot.get("time"), docSnapshot.get("favorite"), docSnapshot.get("Weekday"));
     return wp;
   }
 }
@@ -377,6 +389,7 @@ rhit.FBAuthManager = class {
 rhit.main = function () {
   rhit.fbAuthManager = new rhit.FBAuthManager();
   rhit.fbAuthManager.beginListening();
+  this.myPlansManager = new rhit.MyPlansManager();
   if (document.querySelector("#loginPage")) {
     this.fbAuthManager.startFirebaseUI();
   }
@@ -390,7 +403,6 @@ rhit.main = function () {
     new rhit.PastWorkoutsController();
   }
   if (document.querySelector("#plansPage")) {
-    this.myPlansManager = new rhit.MyPlansManager();
     new rhit.MyPlansController();
   }
   if (document.querySelector("#customPage")) {
