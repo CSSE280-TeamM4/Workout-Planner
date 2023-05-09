@@ -46,11 +46,15 @@ rhit.MyPlansController = class {
 	}
 
 	updateList () {
+    //TODO: ONLY SHOW PLANS WITH USER UID
+
 		const newList = htmlToElement(`<div id="plansList"></div>`);
 
 		for(let i = 0; i < rhit.myPlansManager.length; i ++){
 			const wp = rhit.myPlansManager.getPlanAtIndex(i);
 			const newCard = this._createCard(wp);
+
+      //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
 
 			// newCard.onclick = (event) => {
 			// 	window.location.href = `/moviequote.html?id=${mq.id}`;
@@ -75,12 +79,21 @@ rhit.MyPlansManager = class {
 		this._ref = firebase.firestore().collection("Workout Plans");
 		this._unsubscribe = null;
   }
-  add(){
+  add(name, goal, diff, days, favorite, uid, exercises){
 		this._ref.add({
-			//TODO: ADD NEW PLAN METHOD
-		})
+			["Name"]: name,
+      ["Goal"]: goal,
+      ["Difficulty"]: diff,
+      ["Days/Week"]: days,
+      ["favorite"]: favorite,
+      ["uid"]: uid,
+      ["Weekday"]: exercises
+		});
 		
 	}
+  addExisting(plan) {
+    //TOOD CALL ADD WITH PARAMETERS OF GIVEN PLAN AND USER UID
+  }
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
 			this._documentSnapshots = querySnapshot.docs;
@@ -90,6 +103,12 @@ rhit.MyPlansManager = class {
 	stopListening() {
 		this._unsubscribe();
 	}
+  update() { 
+    //TODO: WRITE EDIT PLAN METHOD
+  }
+	delete(id){
+    //TODO: WRITE DELETE PLAN METHOD
+  }
 	get length() {
 		return this._documentSnapshots.length;
 	}
