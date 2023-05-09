@@ -1,0 +1,9 @@
+[debug] [2023-05-09T13:59:46.006Z] ----------------------------------------------------------------------
+[debug] [2023-05-09T13:59:46.008Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\huangr2\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2023-05-09T13:59:46.009Z] CLI Version:   11.24.0
+[debug] [2023-05-09T13:59:46.009Z] Platform:      win32
+[debug] [2023-05-09T13:59:46.009Z] Node Version:  v18.13.0
+[debug] [2023-05-09T13:59:46.010Z] Time:          Tue May 09 2023 09:59:46 GMT-0400 (Eastern Daylight Time)
+[debug] [2023-05-09T13:59:46.010Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-05-09T13:59:46.013Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]

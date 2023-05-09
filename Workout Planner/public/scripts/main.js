@@ -6,7 +6,7 @@ rhit.myPlansManager = null;
 rhit.existingPlansManager = null;
 rhit.PLANS_COLLECTION = "Workout Plans";
 rhit.EXERCISES_COLLECTION = "Exercises";
-rhit.DAYS_KEY = "Days/Week";
+rhit.DAYS_KEY = "Days";
 
 let weekday = new Date().getDay();
 let streak = 0;
@@ -48,7 +48,7 @@ rhit.MyPlansManager = class {
       ["Name"]: name,
       ["Goal"]: goal,
       ["Difficulty"]: diff,
-      ["Days/Week"]: days,
+      ["Days"]: days,
       ["favorite"]: favorite,
       ["uid"]: uid,
       ["time"]: time,
@@ -206,6 +206,7 @@ rhit.MyPlansController = class {
     rhit.myPlansManager.beginListening(this.updateList.bind(this));
   }
   _createCard(wp) {
+    console.log(wp.name);
     //brennan's code
     //     return htmlToElement(
     //       ` <div style="width: 18rem;">
@@ -348,6 +349,7 @@ rhit.ExistingPlansController = class {
     rhit.existingPlansManager.beginListening(this.updateList.bind(this));
   }
   _createCard(wp) {
+    console.log(wp.name);
     return htmlToElement(
       ` <div style="width: 18rem;">
       <div class="card-body">
