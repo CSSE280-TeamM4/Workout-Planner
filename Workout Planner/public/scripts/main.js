@@ -213,23 +213,16 @@ rhit.PastWorkoutsController = class {
 };
 
 rhit.WorkoutPlan = class {
-  constructor(id, name) {
-    this.id = id;
-    this.name = name;
-    
-  }
-}
-
-rhit.ExistingPlan = class {
   constructor(id, name, goal, level, sessions) {
     this.id = id;
     this.name = name;
     this.goal = goal;
     this.level = level;
     this.sessions = sessions;
-    
   }
 }
+
+
 
 rhit.ExistingPlansController = class {
   constructor() {
@@ -302,7 +295,7 @@ rhit.ExistingPlansController = class {
 rhit.ExistingPlansManager = class {
   constructor() {
     this._documentSnapshots = [];
-    this._ref = firebase.firestore().collection("Existing Plans");
+    this._ref = firebase.firestore().collection("Workout Plans");
     this._unsubscribe = null;
   }
   add(name, goal, level, sessions) {
@@ -337,7 +330,7 @@ rhit.ExistingPlansManager = class {
   }
   getPlanAtIndex(index) {
     const docSnapshot = this._documentSnapshots[index];
-    const wp = new rhit.ExistingPlan(docSnapshot.id, docSnapshot.get("name"), docSnapshot.get("goal"), docSnapshot.get("level"), docSnapshot.get("sessions"));
+    const wp = new rhit.WorkoutPlan(docSnapshot.id, docSnapshot.get("name"), docSnapshot.get("goal"), docSnapshot.get("level"), docSnapshot.get("sessions"));
     return wp;
   }
 }
