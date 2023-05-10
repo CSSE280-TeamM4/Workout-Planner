@@ -24,6 +24,29 @@ body {
   padding-bottom: 30px;
 }
 
+.card{
+  margin: 10px 0;
+}
+
+.card-title,
+.card-subtitle{
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+}
+
+.dropdown-menu-right{
+  left: -128px
+  
+  
+}
+
+#lr1{
+  color: white;
+
+}
+
 #subTitle {
   display: block;
   margin: 0;
@@ -35,6 +58,7 @@ body {
   color: white;
   position: fixed;
   top: 55px;
+  /* z-index: 998; */
 }
 
 #todayWork {

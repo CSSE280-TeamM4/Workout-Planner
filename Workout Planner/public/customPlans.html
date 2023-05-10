@@ -22,6 +22,8 @@
 
   <div id="customPage" class="container page-container">
 
+    <label for="planName">Plan name:</label>
+    <input type="text" id="planName" name="planName">
 
     <h3>Monday</h3>
     <button id="monButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
@@ -72,7 +74,7 @@
               <div id="ifYes" style="display: block;">
                 <label for="exercise-Name">Exercise Name</label> <input type="text" id="car" name="car" /><br />
               </div>
-              
+
               <!-- a little scuffed but this works -->
               <script type="text/javascript">
                 function yesnoCheck(that) {
@@ -106,6 +108,11 @@
       </div>
     </div>
     <br>
+    
+    <btn id="customBack" type="button" class="btn">back</btn>
+
+    <btn id="customSave" type="button" class="btn">save</btn>
+
 
 
   </div>
