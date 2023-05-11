@@ -53,7 +53,7 @@ rhit.MyPlansManager = class {
       ["favorite"]: favorite,
       ["uid"]: rhit.fbAuthManager.uid,
       ["time"]: time,
-      ["Weekday"]: exercises
+      ["Weekday"]: exercises,
     });
   }
   addExisting(wp) {
@@ -101,7 +101,6 @@ rhit.MyPlansManager = class {
     );
     return wp;
   }
-  
 };
 
 rhit.ExistingPlansManager = class {
@@ -126,7 +125,7 @@ rhit.ExistingPlansManager = class {
       ["favorite"]: favorite,
       ["uid"]: rhit.fbAuthManager.uid,
       ["time"]: time,
-      ["Weekday"]: exercises
+      ["Weekday"]: exercises,
     });
   }
   addExisting(wp) {
@@ -203,65 +202,61 @@ rhit.FBAuthManager = class {
 };
 
 rhit.SinglePlanManager = class {
-	constructor(planId) {
-		this._documentSnapshot = {};
-		this._unsubscribe = null;
-		this._ref = firebase.firestore().collection("Workout Plans").doc(planId);
-	}
-	beginListening(changeListener) {
+  constructor(planId) {
+    this._documentSnapshot = {};
+    this._unsubscribe = null;
+    this._ref = firebase.firestore().collection("Workout Plans").doc(planId);
+  }
+  beginListening(changeListener) {
+    this._unsubscribe = this._ref.onSnapshot((doc) => {
+      if (doc.exists) {
+        console.log("Document data: ", doc.data());
+        this._documentSnapshot = doc;
+        changeListener();
+      } else {
+        console.log("No such document!");
+        // window.location.href = "/"'
+      }
+    });
+  }
+  stopListening() {
+    this._unsubscribe();
+  }
 
-		this._unsubscribe = this._ref.onSnapshot((doc) => {
-			if (doc.exists) {
-				console.log("Document data: ", doc.data());
-				this._documentSnapshot = doc;
-				changeListener();
-			} else {
-				console.log("No such document!");
-				// window.location.href = "/"'
-			}
-		});
+  update(name, goal, diff, days, favorite, time, exercises) {
+    // console.log("update quote movie");
+    this._ref
+      .update({
+        ["Name"]: name,
+        ["Goal"]: goal,
+        ["Difficulty"]: diff,
+        ["Days"]: days,
+        ["favorite"]: favorite,
+        ["uid"]: rhit.fbAuthManager.uid,
+        ["time"]: time,
+        ["favorite"]: favorite,
+        ["Weekday"]: exercises,
+      })
+      .then(() => {
+        console.log("document successfulle updated");
+      })
+      .catch(function (error) {
+        console.log("Error adding document: ", error);
+      });
+  }
 
-	}
-	stopListening() {
-		this._unsubscribe();
-	}
+  delete() {
+    return this._ref.delete();
+  }
 
-	update(name, goal, diff, days, favorite, time, exercises) {
-		// console.log("update quote movie");
-		this._ref.update({
-			["Name"]: name,
-      ["Goal"]: goal,
-      ["Difficulty"]: diff,
-      ["Days"]: days,
-      ["favorite"]: favorite,
-      ["uid"]: rhit.fbAuthManager.uid,
-      ["time"]: time,
-      ["favorite"]: favorite,
-      ["Weekday"]: exercises,
-		})
-			.then(() => {
-				console.log("document successfulle updated");
-			})
-			.catch(function (error) {
-				console.log("Error adding document: ", error);
-			});
-	}
+  get name() {
+    return this._documentSnapshot.get("Name");
+  }
 
-	delete(){
-		return this._ref.delete();
-		
-	}
-
-	get name() {
-		return this._documentSnapshot.get("Name");
-	}
-
-	get goal() {
-		return this._documentSnapshot.get("Goal");
-	}
-}
-
-
+  get goal() {
+    return this._documentSnapshot.get("Goal");
+  }
+};
 
 //
 // PAGE CONTROLLERS
@@ -281,9 +276,8 @@ rhit.MyPlansController = class {
     //   }).catch(function (error) {
     //     console.log("error removing doc", error);
     //   });;
-// 
+    //
     // });
-
 
     // will come back to this
     //   $("#addCustomDialog").on("show.bs.modal", (event) => {
@@ -312,21 +306,20 @@ rhit.MyPlansController = class {
   }
 
   updateList() {
-
     const newList = htmlToElement(`<div id="plansList"></div>`);
 
     for (let i = 0; i < rhit.myPlansManager.length; i++) {
       const wp = rhit.myPlansManager.getPlanAtIndex(i);
-      console.log("wp.uid: " + wp.uid + " auth id: " + rhit.fbAuthManager.uid);
+      if (wp.favorite == true) {
+        rhit.favoritePlan = wp;
+      }
       const newCard = this._createCard(wp);
-      
+
       newCard.onclick = (event) => {
-        
         window.location.href = `/plan.html?id=${wp.id}`;
       };
       //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
       if (wp.uid == rhit.fbAuthManager.uid) {
-
         // newCard.onclick = (event) => {
         // 	window.location.href = `/moviequote.html?id=${mq.id}`;
         // }
@@ -344,56 +337,53 @@ rhit.MyPlansController = class {
 };
 
 rhit.SinglePlanController = class {
-	constructor() {
-		document.querySelector("#submitEditPlan").addEventListener("click", (event) => {
-			const quote = document.querySelector("#inputQuote").value;
-			const movie = document.querySelector("#inputMovie").value;
-			// rhit.fbSingleQuoteManager.update(quote, movie);
-		});
-		$("#editPlanDialog").on("show.bs.modal", (event) => {
-			//pre 
+  constructor() {
+    document
+      .querySelector("#submitEditPlan")
+      .addEventListener("click", (event) => {
+        const quote = document.querySelector("#inputQuote").value;
+        const movie = document.querySelector("#inputMovie").value;
+        // rhit.fbSingleQuoteManager.update(quote, movie);
+      });
+    $("#editPlanDialog").on("show.bs.modal", (event) => {
+      //pre
       // document.querySelector("#inputQuote").value = rhit.fbSingleQuoteManager.quote;
-			// document.querySelector("#inputMovie").value = rhit.fbSingleQuoteManager.movie;
-			document.querySelector("#inputQuote").value = "some plan";
-			document.querySelector("#inputMovie").value = "info";
-		});
-		$("#editPlanDialog").on("shown.bs.modal", (event) => {
-		// 	//post animation
-			document.querySelector("#inputQuote").focus();
-		});
+      // document.querySelector("#inputMovie").value = rhit.fbSingleQuoteManager.movie;
+      document.querySelector("#inputQuote").value = "some plan";
+      document.querySelector("#inputMovie").value = "info";
+    });
+    $("#editPlanDialog").on("shown.bs.modal", (event) => {
+      // 	//post animation
+      document.querySelector("#inputQuote").focus();
+    });
 
+    document
+      .querySelector("#submitDeletePlan")
+      .addEventListener("click", (event) => {
+        rhit.singlePlanManager
+          .delete()
+          .then(function () {
+            // console.log("document deleted");
+            window.location.href = "/myPlans.html";
+          })
+          .catch(function (error) {
+            console.log("error removing doc", error);
+          });
+      });
 
-		document.querySelector("#submitDeletePlan").addEventListener("click", (event) => {
-			rhit.singlePlanManager.delete().then(function(){
-				// console.log("document deleted");
-				window.location.href = "/myPlans.html";
-			}).catch(function(error){
-				console.log("error removing doc", error);
-			});;
-
-		});
-
-
-		rhit.singlePlanManager.beginListening(this.updateView.bind(this));
-	}
-	updateView() {
-		// document.querySelector("#cardQuote").innerHTML = rhit.fbSingleQuoteManager.quote;
-		// document.querySelector("#cardMovie").innerHTML = rhit.fbSingleQuoteManager.movie;
+    rhit.singlePlanManager.beginListening(this.updateView.bind(this));
+  }
+  updateView() {
+    // document.querySelector("#cardQuote").innerHTML = rhit.fbSingleQuoteManager.quote;
+    // document.querySelector("#cardMovie").innerHTML = rhit.fbSingleQuoteManager.movie;
     document.querySelector("#cardQuote").innerHTML = "aaaaaaaa";
-		document.querySelector("#cardMovie").innerHTML = "bbbbbb";
-	}
-}
-
+    document.querySelector("#cardMovie").innerHTML = "bbbbbb";
+  }
+};
 
 rhit.TodaysWorkoutController = class {
-  constructor() { 
-    for(let i = 0; i < rhit.myPlansManager.length; i ++) {
-      let plan = rhit.myPlansManager.getPlanAtIndex(index)
-      if (plan.favorite == true){
-        rhit.favoritePlan = plan;
-        break;
-      }
-    }
+  constructor(wp) {
+    console.log(wp);
   }
 };
 
@@ -416,15 +406,15 @@ rhit.CustomPlanController = class {
       Friday: {},
       Saturday: {},
       Sunday: {},
-    }
+    };
     document.querySelector("#customBack").onclick = (event) => {
-      window.location.href = '/myPlans.html';
-    }
+      window.location.href = "/myPlans.html";
+    };
     document.querySelector("#customSave").onclick = (event) => {
       // name, goal, diff, days, favorite time, exercises
       rhit.myPlansManager.add("1", "1", "1", "1", false, "60", Weekday);
       alert("Saved");
-    }
+    };
   }
 };
 
@@ -485,8 +475,8 @@ rhit.PastWorkoutsController = class {
 rhit.ExistingPlansController = class {
   constructor() {
     document.querySelector("#existingDone").onclick = (event) => {
-      window.location.href = '/myPlans.html';
-    }
+      window.location.href = "/myPlans.html";
+    };
 
     rhit.existingPlansManager.beginListening(this.updateList.bind(this));
   }
@@ -528,7 +518,7 @@ rhit.ExistingPlansController = class {
 
     oldList.parentElement.appendChild(newList);
   }
-}
+};
 
 //
 // MAIN
@@ -561,15 +551,18 @@ rhit.main = function () {
   }
   if (document.querySelector("#planPage")) {
     const queryString = window.location.search;
-		console.log(queryString);
-		const urlParams = new URLSearchParams(queryString);
-		const planId = urlParams.get("id");
+    console.log(queryString);
+    const urlParams = new URLSearchParams(queryString);
+    const planId = urlParams.get("id");
 
-		if (!planId) {
-			window.location.href = "/";
-		}
+    if (!planId) {
+      window.location.href = "/";
+    }
     rhit.singlePlanManager = new rhit.SinglePlanManager(planId);
     new rhit.SinglePlanController();
+  }
+  if (document.querySelector("#todayPage")) {
+    new rhit.TodaysWorkoutController(rhit.favoritePlan);
   }
 };
 
