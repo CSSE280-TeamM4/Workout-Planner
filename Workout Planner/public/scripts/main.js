@@ -7,6 +7,7 @@ rhit.existingPlansManager = null;
 rhit.PLANS_COLLECTION = "Workout Plans";
 rhit.EXERCISES_COLLECTION = "Exercises";
 rhit.DAYS_KEY = "Days";
+rhit.favoritePlan = null;
 
 let weekday = new Date().getDay();
 let streak = 0;
@@ -52,8 +53,7 @@ rhit.MyPlansManager = class {
       ["favorite"]: favorite,
       ["uid"]: rhit.fbAuthManager.uid,
       ["time"]: time,
-      ["favorite"]: favorite,
-      ["Weekday"]: exercises,
+      ["Weekday"]: exercises
     });
   }
   addExisting(wp) {
@@ -63,7 +63,6 @@ rhit.MyPlansManager = class {
       wp.level,
       wp.sessions,
       wp.favorite,
-      rhit.fbAuthManager.uid,
       wp.time,
       wp.exercises
     );
@@ -102,6 +101,7 @@ rhit.MyPlansManager = class {
     );
     return wp;
   }
+  
 };
 
 rhit.ExistingPlansManager = class {
@@ -116,6 +116,29 @@ rhit.ExistingPlansManager = class {
       this._documentSnapshots = querySnapshot.docs;
       changeListener();
     });
+  }
+  add(name, goal, diff, days, favorite, time, exercises) {
+    this._ref.add({
+      ["Name"]: name,
+      ["Goal"]: goal,
+      ["Difficulty"]: diff,
+      ["Days"]: days,
+      ["favorite"]: favorite,
+      ["uid"]: rhit.fbAuthManager.uid,
+      ["time"]: time,
+      ["Weekday"]: exercises
+    });
+  }
+  addExisting(wp) {
+    this.add(
+      wp.name,
+      wp.goal,
+      wp.level,
+      wp.sessions,
+      wp.favorite,
+      wp.time,
+      wp.exercises
+    );
   }
   stopListening() {
     this._unsubscribe();
@@ -302,14 +325,14 @@ rhit.MyPlansController = class {
         window.location.href = `/plan.html?id=${wp.id}`;
       };
       //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
-      // if (wp.uid == rhit.fbAuthManager.uid) {
+      if (wp.uid == rhit.fbAuthManager.uid) {
 
         // newCard.onclick = (event) => {
         // 	window.location.href = `/moviequote.html?id=${mq.id}`;
         // }
 
         newList.appendChild(newCard);
-      // }
+      }
     }
 
     const oldList = document.querySelector("#plansList");
@@ -363,7 +386,15 @@ rhit.SinglePlanController = class {
 
 
 rhit.TodaysWorkoutController = class {
-  constructor() { }
+  constructor() { 
+    for(let i = 0; i < rhit.myPlansManager.length; i ++) {
+      let plan = rhit.myPlansManager.getPlanAtIndex(index)
+      if (plan.favorite == true){
+        rhit.favoritePlan = plan;
+        break;
+      }
+    }
+  }
 };
 
 rhit.MyAccountController = class {
@@ -456,17 +487,7 @@ rhit.ExistingPlansController = class {
     document.querySelector("#existingDone").onclick = (event) => {
       window.location.href = '/myPlans.html';
     }
-    // will come back to this
-    //   $("#addCustomDialog").on("show.bs.modal", (event) => {
-    //     //pre animation
-    //     document.querySelector("#inputQuote").value = "";
-    //     document.querySelector("#inputMovie").value = "";
-    //   });
-    //   $("#addCustomDialog").on("shown.bs.modal", (event) => {
-    //     //post animation
-    //     document.querySelector("#inputQuote").focus();
-    //     // document.querySelector("#inputMovie").value = "";
-    //   });
+
     rhit.existingPlansManager.beginListening(this.updateList.bind(this));
   }
   _createCard(wp) {
@@ -493,7 +514,8 @@ rhit.ExistingPlansController = class {
         const newCard = this._createCard(wp);
 
         newCard.onclick = (event) => {
-          rhit.myPlansManager.addExisting(wp);
+          console.log(wp.exercises);
+          rhit.existingPlansManager.addExisting(wp);
         };
 
         newList.appendChild(newCard);
