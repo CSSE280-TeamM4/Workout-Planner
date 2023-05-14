@@ -345,7 +345,7 @@ body {
   left: 60vw;
   background-color: #800000;
   color: white;
-  /* z-index: 999; */
+  /* z-index: -1; */
 }
 
 #monButton:active,
@@ -357,4 +357,8 @@ body {
 #sunButton:active {
   transform: translateY(2px);
   opacity: 0.8;
+}
+
+#exercise-names{
+  -webkit-appearance: menulist;
 }

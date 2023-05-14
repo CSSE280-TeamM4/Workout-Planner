@@ -22,34 +22,41 @@
 
   <div id="customPage" class="container page-container">
 
-    <label for="planName">Plan name:</label>
-    <input type="text" id="planName" name="planName">
+    <!-- <label for="planName">Plan name:</label>
+    <input type="text" id="planName" name="planName"> -->
 
     <h3>Monday</h3>
+    <div id="monList"></div>
     <button id="monButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
       <i class="material-icons">add</i>
     </button>
     <h3>Tuesday</h3>
+    <div id="tueList"></div>
     <button id="tueButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
       <i class="material-icons">add</i>
     </button>
     <h3>Wednesday</h3>
+    <div id="wedList"></div>
     <button id="wedButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
       <i class="material-icons">add</i>
     </button>
     <h3>Thursday</h3>
+    <div id="thuList"></div>
     <button id="thuButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
       <i class="material-icons">add</i>
     </button>
     <h3>Friday</h3>
+    <div id="friList"></div>
     <button id="friButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
       <i class="material-icons">add</i>
     </button>
     <h3>Saturday</h3>
+    <div id="satList"></div>
     <button id="satButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
       <i class="material-icons">add</i>
     </button>
     <h3>Sunday</h3>
+    <div id="sunList"></div>
     <button id="sunButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
       <i class="material-icons">add</i>
     </button>
@@ -62,8 +69,9 @@
             <h5 class="modal-title" id="exampleModalLabel">Create Custom Plan</h5>
           </div>
           <div class="modal-body">
+            <span>Choose an Exercise:</span>
             <div id="exerciseName">
-              <label for="exercise-names">Choose an exercise:</label>
+                <!-- <label for="exercise-names">Choose an exercise:</label> -->
               <select onchange="yesnoCheck(this);" name="exercise-names" id="exercise-names">
                 <option value="custom" selected>Custom</option>
                 <option value="chestPress">Chest Press</option>
@@ -72,7 +80,10 @@
               </select>
 
               <div id="ifYes" style="display: block;">
-                <label for="exercise-Name">Exercise Name</label> <input type="text" id="car" name="car" /><br />
+                <br>
+                <label for="customName">Exercise Name:</label>
+                <br>
+                <input type="text" id="customName" name="customName" /><br />
               </div>
 
               <!-- a little scuffed but this works -->
@@ -108,10 +119,13 @@
       </div>
     </div>
     <br>
-    
+
     <btn id="customBack" type="button" class="btn">back</btn>
 
     <btn id="customSave" type="button" class="btn">save</btn>
+
+    <!-- <btn id="customCreate" type="button" class="btn">create</btn> -->
+
 
 
 
