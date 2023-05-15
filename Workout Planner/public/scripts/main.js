@@ -1,4 +1,3 @@
-
 var rhit = rhit || {};
 
 rhit.fbAuthManager = null;
@@ -18,6 +17,10 @@ function htmlToElement(html) {
   template.innerHTML = html;
   return template.content.firstChild;
 }
+
+rhit.setFavorite = function (wp) {
+  rhit.favoritePlan = wp;
+};
 //
 // WORKOUT PLAN OBJECT
 //
@@ -77,10 +80,6 @@ rhit.MyPlansManager = class {
     this._unsubscribe();
   }
 
-  delete() {
-    //TODO: WRITE DELETE PLAN METHOD
-    // return this._ref.delete();
-  }
   get length() {
     return this._documentSnapshots.length;
   }
@@ -105,7 +104,6 @@ rhit.MyPlansManager = class {
     return wp;
   }
 };
-
 
 rhit.ExistingPlansManager = class {
   constructor() {
@@ -206,12 +204,10 @@ rhit.FBAuthManager = class {
 };
 
 rhit.ExercisesManager = class {
-
   constructor(planId) {
     this._documentSnapshot = {};
     this._unsubscribe = null;
     this._ref = firebase.firestore().collection("Workout Plans").doc(planId);
-
   }
   // beginListening(changeListener) {
     // this._unsubscribe = this._ref.onSnapshot((doc) => {
@@ -262,16 +258,14 @@ rhit.ExercisesManager = class {
   }
 
   update(day, exName, sets, reps, weight) {
-
-    this._ref.update({
-      ["Weekday." + day + "." + exName]: {
-        "sets": sets,
-        "reps": reps,
-        "weight": weight,
-      }
-
-
-    })
+    this._ref
+      .update({
+        ["Weekday." + day + "." + exName]: {
+          sets: sets,
+          reps: reps,
+          weight: weight,
+        },
+      })
       .then(() => {
         console.log("document successfulle updated");
       })
@@ -348,7 +342,6 @@ rhit.SinglePlanManager = class {
 rhit.MyPlansController = class {
   constructor() {
     document.querySelector("#submitCustomDialog").onclick = (event) => {
-
       const planName = document.querySelector("#inputPlanName").value;
       rhit.myPlansManager.add(planName, "1", "1", "1", false, "60", "1");
     };
@@ -463,8 +456,45 @@ rhit.SinglePlanController = class {
 };
 
 rhit.TodaysWorkoutController = class {
-  constructor(wp) {
-    console.log(wp);
+  constructor() {
+    this.favoritePlan = null;
+    this._documentSnapshots = [];
+    this._ref = firebase.firestore().collection("Workout Plans");
+    this.favoritePlan = this.getFavorite();
+    
+    this.displayPlan();
+  }
+
+  getFavorite() {
+    let fav = null;
+    this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
+      this._documentSnapshots = querySnapshot.docs;
+    
+    for (let i = 0; i < this._documentSnapshots.length; i++) {
+      const docSnapshot = this._documentSnapshots[i];
+
+      const wp = new rhit.WorkoutPlan(
+        docSnapshot.id,
+        docSnapshot.get("Name"),
+        docSnapshot.get("Goal"),
+        docSnapshot.get("Difficulty"),
+        docSnapshot.get("Days"),
+        docSnapshot.get("uid"),
+        docSnapshot.get("time"),
+        docSnapshot.get("favorite"),
+        docSnapshot.get("Weekday")
+      );
+      if (wp.favorite == true && wp.uid == rhit.fbAuthManager.uid) {
+        console.log(wp);
+        fav = wp;
+        break;
+      }
+    }
+    return fav;
+  });
+  }
+  displayPlan() {
+    console.log(this.favoritePlan);
   }
 };
 
@@ -479,7 +509,6 @@ rhit.MyAccountController = class {
 
 rhit.CustomPlanController = class {
   constructor() {
-
     let day = "";
     document.querySelector("#monButton").onclick = (event) => {
       day = "Monday";
@@ -557,7 +586,7 @@ rhit.CustomPlanController = class {
       //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
       if (wp.uid == rhit.fbAuthManager.uid) {
         // newCard.onclick = (event) => {
-        // 	window.location.href = `/moviequote.html?id=${mq.id}`;
+        //
         // }
 
         newList.appendChild(newCard);
@@ -717,7 +746,7 @@ rhit.ExistingPlansController = class {
 rhit.main = function () {
   rhit.fbAuthManager = new rhit.FBAuthManager();
   rhit.fbAuthManager.beginListening();
-  this.myPlansManager = new rhit.MyPlansManager();
+  rhit.myPlansManager = new rhit.MyPlansManager();
   if (document.querySelector("#loginPage")) {
     this.fbAuthManager.startFirebaseUI();
   }
@@ -763,7 +792,7 @@ rhit.main = function () {
     new rhit.SinglePlanController(planId);
   }
   if (document.querySelector("#todayPage")) {
-    new rhit.TodaysWorkoutController(rhit.favoritePlan);
+    new rhit.TodaysWorkoutController();
   }
 };
 
