@@ -97,6 +97,11 @@ rhit.MyPlansManager = class {
       docSnapshot.get("favorite"),
       docSnapshot.get("Weekday")
     );
+    // console.log(docSnapshot.get("Weekday.Monday"));
+    if (docSnapshot.get("Weekday.Friday")){
+      console.log(docSnapshot.get("Name")+ " " + Object.keys(docSnapshot.get("Weekday.Friday")).length);
+
+    }
     return wp;
   }
 };
@@ -208,26 +213,50 @@ rhit.ExercisesManager = class {
     this._ref = firebase.firestore().collection("Workout Plans").doc(planId);
 
   }
+  // beginListening(changeListener) {
+    // this._unsubscribe = this._ref.onSnapshot((doc) => {
+    //   if (doc.exists) {
+    //     console.log("Document data: ", doc.data());
+    //     this._documentSnapshot = doc;
+    //     changeListener();
+    //   } else {
+    //     console.log("No such document!");
+    //     // window.location.href = "/"'
+    //   }
+    // });
+  // }
   beginListening(changeListener) {
-    this._unsubscribe = this._ref.onSnapshot((doc) => {
-      if (doc.exists) {
-        console.log("Document data: ", doc.data());
-        this._documentSnapshot = doc;
-        changeListener();
-      } else {
-        console.log("No such document!");
-        // window.location.href = "/"'
-      }
+    this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
+      this._documentSnapshots = querySnapshot.docs;
+      changeListener();
     });
   }
   stopListening() {
     this._unsubscribe();
   }
-  getExeriseAtIndex(index) {
+
+  // get length() {
+  //   return Object.keys(docSnapshot.get("Weekday.Monday")).length
+  // }
+  getExercise(index, day){
+    return Object.keys(this._documentSnapshots[index].get("Weekday.Monday")).length;
+  }
+
+  getExerciseAtIndex(index) {
     const docSnapshot = this._documentSnapshots[index];
+    console.log(docSnapshot.get("Weekday.Monday"));
     const ex = new rhit.WorkoutPlan(
       // docSnapshot.id,
-      docSnapshot.get("exercises"),
+      // docSnapshot.get("Weekday")
+      docSnapshot.id,
+      docSnapshot.get("Name"),
+      docSnapshot.get("Goal"),
+      docSnapshot.get("Difficulty"),
+      docSnapshot.get("Days"),
+      docSnapshot.get("uid"),
+      docSnapshot.get("time"),
+      docSnapshot.get("favorite"),
+      docSnapshot.get("Weekday")
     );
     return ex;
   }
@@ -254,6 +283,7 @@ rhit.ExercisesManager = class {
   delete() {
     return this._ref.delete();
   }
+  
 }
 rhit.SinglePlanManager = class {
   constructor(planId) {
@@ -510,12 +540,15 @@ rhit.CustomPlanController = class {
 
   updateList() {
     const newList = htmlToElement(`<div id="monList"></div>`);
-
-    for (let i = 0; i < rhit.myPlansManager.length; i++) {
-      const wp = rhit.myPlansManager.getPlanAtIndex(i);
-      if (wp.favorite == true) {
-        rhit.favoritePlan = wp;
-      }
+    // console.log(rhit.exercisesManager.getExerciseAtIndex(0));
+    // console.log("Weekday".size)
+    // console.log(rhit.exercisesManager.getExercise(1, "Monday"));
+    for (let i = 0; i < rhit.exercisesManager.getExercise(i,"a"); i++) {
+      const wp = rhit.exercisesManager.getExerciseAtIndex(i);
+      console.log(wp);
+      // if (wp.favorite == true) {
+      //   rhit.favoritePlan = wp;
+      // }
       const newCard = this._createCard(wp);
 
       newCard.onclick = (event) => {
@@ -710,7 +743,7 @@ rhit.main = function () {
       window.location.href = "/";
     }
 
-    rhit.exercisesManager = new rhit.ExercisesManager(planId);
+    this.exercisesManager = new rhit.ExercisesManager(planId);
     new rhit.CustomPlanController();
   }
   if (document.querySelector("#existingPage")) {
@@ -726,7 +759,7 @@ rhit.main = function () {
     if (!planId) {
       window.location.href = "/";
     }
-    rhit.singlePlanManager = new rhit.SinglePlanManager(planId);
+    this.singlePlanManager = new rhit.SinglePlanManager(planId);
     new rhit.SinglePlanController(planId);
   }
   if (document.querySelector("#todayPage")) {
