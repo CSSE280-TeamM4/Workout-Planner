@@ -97,8 +97,9 @@ rhit.MyPlansManager = class {
       docSnapshot.get("Weekday")
     );
     // console.log(docSnapshot.get("Weekday.Monday"));
-    if (docSnapshot.get("Weekday.Friday")){
-      console.log(docSnapshot.get("Name")+ " " + Object.keys(docSnapshot.get("Weekday.Friday")).length);
+    if (docSnapshot.get("Weekday.Friday")) {
+      console.log(docSnapshot.get("Name") + " " + Object.keys(docSnapshot.get("Weekday.Friday")).length);
+      // console.log(Object.values(docSnapshot.data().docSnapshot.get("Weekday")));
 
     }
     return wp;
@@ -209,22 +210,16 @@ rhit.ExercisesManager = class {
     this._unsubscribe = null;
     this._ref = firebase.firestore().collection("Workout Plans").doc(planId);
   }
-  // beginListening(changeListener) {
-    // this._unsubscribe = this._ref.onSnapshot((doc) => {
-    //   if (doc.exists) {
-    //     console.log("Document data: ", doc.data());
-    //     this._documentSnapshot = doc;
-    //     changeListener();
-    //   } else {
-    //     console.log("No such document!");
-    //     // window.location.href = "/"'
-    //   }
-    // });
-  // }
   beginListening(changeListener) {
-    this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
-      this._documentSnapshots = querySnapshot.docs;
-      changeListener();
+    this._unsubscribe = this._ref.onSnapshot((doc) => {
+      if (doc.exists) {
+        console.log("Document data: ", doc.data());
+        this._documentSnapshot = doc;
+        changeListener();
+      } else {
+        console.log("No such document!");
+        // window.location.href = "/"'
+      }
     });
   }
   stopListening() {
@@ -234,28 +229,29 @@ rhit.ExercisesManager = class {
   // get length() {
   //   return Object.keys(docSnapshot.get("Weekday.Monday")).length
   // }
-  getExercise(index, day){
-    return Object.keys(this._documentSnapshots[index].get("Weekday.Monday")).length;
+  getExercisesFor(day) {
+    return this._documentSnapshot.get("Weekday")[day];
+    // return Object.keys(this._documentSnapshots[index].get("Weekday.Monday")).length;
   }
 
-  getExerciseAtIndex(index) {
-    const docSnapshot = this._documentSnapshots[index];
-    console.log(docSnapshot.get("Weekday.Monday"));
-    const ex = new rhit.WorkoutPlan(
-      // docSnapshot.id,
-      // docSnapshot.get("Weekday")
-      docSnapshot.id,
-      docSnapshot.get("Name"),
-      docSnapshot.get("Goal"),
-      docSnapshot.get("Difficulty"),
-      docSnapshot.get("Days"),
-      docSnapshot.get("uid"),
-      docSnapshot.get("time"),
-      docSnapshot.get("favorite"),
-      docSnapshot.get("Weekday")
-    );
-    return ex;
-  }
+  // getExerciseAtIndex(index) {
+  //   const docSnapshot = this._documentSnapshots[index];
+  //   // console.log(docSnapshot.get("Weekday.Monday"));
+  //   const ex = new rhit.WorkoutPlan(
+  //     // docSnapshot.id,
+  //     // docSnapshot.get("Weekday")
+  //     docSnapshot.id,
+  //     docSnapshot.get("Name"),
+  //     docSnapshot.get("Goal"),
+  //     docSnapshot.get("Difficulty"),
+  //     docSnapshot.get("Days"),
+  //     docSnapshot.get("uid"),
+  //     docSnapshot.get("time"),
+  //     docSnapshot.get("favorite"),
+  //     docSnapshot.get("Weekday")
+  //   );
+  // return ex;
+  // }
 
   update(day, exName, sets, reps, weight) {
     this._ref
@@ -277,7 +273,10 @@ rhit.ExercisesManager = class {
   delete() {
     return this._ref.delete();
   }
-  
+  // get exName() {
+  //   return this._documentSnapshot.get("Name");
+  // }
+
 }
 rhit.SinglePlanManager = class {
   constructor(planId) {
@@ -461,7 +460,7 @@ rhit.TodaysWorkoutController = class {
     this._documentSnapshots = [];
     this._ref = firebase.firestore().collection("Workout Plans");
     this.favoritePlan = this.getFavorite();
-    
+
     this.displayPlan();
   }
 
@@ -469,29 +468,29 @@ rhit.TodaysWorkoutController = class {
     let fav = null;
     this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
       this._documentSnapshots = querySnapshot.docs;
-    
-    for (let i = 0; i < this._documentSnapshots.length; i++) {
-      const docSnapshot = this._documentSnapshots[i];
 
-      const wp = new rhit.WorkoutPlan(
-        docSnapshot.id,
-        docSnapshot.get("Name"),
-        docSnapshot.get("Goal"),
-        docSnapshot.get("Difficulty"),
-        docSnapshot.get("Days"),
-        docSnapshot.get("uid"),
-        docSnapshot.get("time"),
-        docSnapshot.get("favorite"),
-        docSnapshot.get("Weekday")
-      );
-      if (wp.favorite == true && wp.uid == rhit.fbAuthManager.uid) {
-        console.log(wp);
-        fav = wp;
-        break;
+      for (let i = 0; i < this._documentSnapshots.length; i++) {
+        const docSnapshot = this._documentSnapshots[i];
+
+        const wp = new rhit.WorkoutPlan(
+          docSnapshot.id,
+          docSnapshot.get("Name"),
+          docSnapshot.get("Goal"),
+          docSnapshot.get("Difficulty"),
+          docSnapshot.get("Days"),
+          docSnapshot.get("uid"),
+          docSnapshot.get("time"),
+          docSnapshot.get("favorite"),
+          docSnapshot.get("Weekday")
+        );
+        if (wp.favorite == true && wp.uid == rhit.fbAuthManager.uid) {
+          console.log(wp);
+          fav = wp;
+          break;
+        }
       }
-    }
-    return fav;
-  });
+      return fav;
+    });
   }
   displayPlan() {
     console.log(this.favoritePlan);
@@ -509,6 +508,7 @@ rhit.MyAccountController = class {
 
 rhit.CustomPlanController = class {
   constructor() {
+
     let day = "";
     document.querySelector("#monButton").onclick = (event) => {
       day = "Monday";
@@ -537,13 +537,14 @@ rhit.CustomPlanController = class {
       const reps = document.querySelector("#inputReps").value;
       const weight = document.querySelector("#inputWeight").value;
       rhit.exercisesManager.update(day, exName, sets, reps, weight);
+
     };
 
     document.querySelector("#customBack").onclick = (event) => {
       window.location.href = "/myPlans.html";
     };
     document.querySelector("#customSave").onclick = (event) => {
-      rhit.exercisesManager.update(exName, sets, reps, weight);
+      rhit.exercisesManager.update(day, exName, sets, reps, weight);
       alert("Saved");
     };
     // document.querySelector("#customCreate").onclick = (event) => {
@@ -552,14 +553,17 @@ rhit.CustomPlanController = class {
     // alert("Created");
     // };
     // rhit.myPlansManager.add("custom", "1", "1", "1", false, "60", Weekday);
-    rhit.myPlansManager.beginListening(this.updateList.bind(this));
+    rhit.exercisesManager.beginListening(this.updateList.bind(this));
+    // rhit.myPlansManager.beginListening(this.updateList.bind(this));
   }
-  _createCard(wp) {
+  _createCard(key, val) {
     return htmlToElement(
       ` <div style="width: 18rem;">
       <div class="card-body">
-        <h5 class="card-title">${wp.name}</h5>
-        
+        <h5 class="card-title">${key}</h5>
+        <h6 class="card-text">Sets: ${val.sets}</h6>
+        <h6 class="card-text">Reps: ${val.reps}</h6>
+        <h6 class="card-text">Weight: ${val.weight}</h6>
       </div>
     </div>`
     );
@@ -568,36 +572,68 @@ rhit.CustomPlanController = class {
   }
 
   updateList() {
-    const newList = htmlToElement(`<div id="monList"></div>`);
-    // console.log(rhit.exercisesManager.getExerciseAtIndex(0));
-    // console.log("Weekday".size)
-    // console.log(rhit.exercisesManager.getExercise(1, "Monday"));
-    for (let i = 0; i < rhit.exercisesManager.getExercise(i,"a"); i++) {
-      const wp = rhit.exercisesManager.getExerciseAtIndex(i);
-      console.log(wp);
-      // if (wp.favorite == true) {
-      //   rhit.favoritePlan = wp;
-      // }
-      const newCard = this._createCard(wp);
+    let day = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    let oldList = "";
+    let newList = "";
+    for (let i = 0; i < day.length; i++) {
+      if (day[i] === "Monday") {
+        console.log("working");
+        oldList = document.querySelector("#monList");
+        newList = htmlToElement(`<div id="monList"></div>`);
+      }
+      else if (day[i] === "Tuesday") {
+        oldList = document.querySelector("#tueList");
+        newList = htmlToElement(`<div id="tueList"></div>`);
+      }
+      else if (day[i] === "Wednesday") {
+        oldList = document.querySelector("#wedList");
+        newList = htmlToElement(`<div id="wedList"></div>`);
+      }
+      else if (day[i] === "Thursday") {
+        oldList = document.querySelector("#thuList");
+        newList = htmlToElement(`<div id="thuList"></div>`);
+      }
+      else if (day[i] === "Friday") {
+        oldList = document.querySelector("#friList");
+        newList = htmlToElement(`<div id="friList"></div>`);
+      }
+      else if (day[i] === "Saturday") {
+        oldList = document.querySelector("#satList");
+        newList = htmlToElement(`<div id="satList"></div>`);
+      }
+      else if (day[i] === "Sunday") {
+        oldList = document.querySelector("#sunList");
+        newList = htmlToElement(`<div id="sunList"></div>`);
+      }
 
-      newCard.onclick = (event) => {
-        // window.location.href = `/plan.html?id=${wp.id}`;
-      };
-      //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
-      if (wp.uid == rhit.fbAuthManager.uid) {
-        // newCard.onclick = (event) => {
-        //
-        // }
+      // console.log(rhit.exercisesManager.getExercisesFor('Monday'));
 
-        newList.appendChild(newCard);
+      let exercises = rhit.exercisesManager.getExercisesFor(day[i]);
+      if (exercises) {
+
+        for (const [key, value] of Object.entries(exercises)) {
+          console.log(key, value);
+          // const wp = [key, value];
+          const getKey = key;
+          const getVal = value;
+          // console.log([key, value]);
+          const newCard = this._createCard(getKey, getVal);
+          newCard.onclick = (event) => {
+            // window.location.href = `/plan.html?id=${wp.id}`;
+          };
+          newList.appendChild(newCard);
+          // if (wp.uid == rhit.fbAuthManager.uid) {
+          //   console.log("working");
+          // }
+        }
+
+
+        oldList.removeAttribute("id");
+        oldList.hidden = true;
+
+        oldList.parentElement.appendChild(newList);
       }
     }
-
-    const oldList = document.querySelector("#monList");
-    oldList.removeAttribute("id");
-    oldList.hidden = true;
-
-    oldList.parentElement.appendChild(newList);
   }
 };
 
