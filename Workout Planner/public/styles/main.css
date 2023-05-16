@@ -28,12 +28,27 @@ body {
   margin: 10px 0;
 }
 
+.excard{
+  padding-top:10px;
+  padding-left: 50px;
+  /* margin */
+}
+
 .card-title,
 .card-subtitle{
   white-space: nowrap;
   overflow: hidden;
   display: block;
   text-overflow: ellipsis;
+}
+.extitle,
+.extext{
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  font-size: 10px;
 }
 
 .dropdown-menu-right{
@@ -342,7 +357,9 @@ body {
 #friButton,
 #satButton,
 #sunButton {
-  left: 60vw;
+  left: 70vw;
+  position: relative;
+  top: -20px;
   background-color: #800000;
   color: white;
   /* z-index: -1; */

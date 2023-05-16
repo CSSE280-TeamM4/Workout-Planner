@@ -559,11 +559,11 @@ rhit.CustomPlanController = class {
   _createCard(key, val) {
     return htmlToElement(
       ` <div style="width: 18rem;">
-      <div class="card-body">
-        <h5 class="card-title">${key}</h5>
-        <h6 class="card-text">Sets: ${val.sets}</h6>
-        <h6 class="card-text">Reps: ${val.reps}</h6>
-        <h6 class="card-text">Weight: ${val.weight}</h6>
+      <div class="excard">
+        <h5 class="extitle">${key}</h5>
+        <p class="extext">&nbsp;&nbsp;&nbsp;&nbsp;Sets: ${val.sets}</p>
+        <p class="extext">&nbsp;&nbsp;&nbsp;&nbsp;Reps: ${val.reps}</p>
+        <p class="extext">&nbsp;&nbsp;&nbsp;&nbsp;Weight: ${val.weight} lb</p>
       </div>
     </div>`
     );

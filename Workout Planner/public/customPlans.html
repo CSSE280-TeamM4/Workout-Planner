@@ -27,130 +27,130 @@
     <div id="mon" class=container>
       <h3>Monday</h3>
       <div id="monList"></div>
-      <button id="monButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
-        <i class="material-icons">add</i>
-      </button>
     </div>
+    <button id="monButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+      <i class="material-icons">add</i>
+    </button>
     <hr>
 
     <div id="tue" class=container>
       <h3>Tuesday</h3>
       <div id="tueList"></div>
+    </div>
       <button id="tueButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
         <i class="material-icons">add</i>
       </button>
-    </div>
     <hr>
 
     <div id="wed" class=container>
-    <h3>Wednesday</h3>
-    <div id="wedList"></div>
-    <button id="wedButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+      <h3>Wednesday</h3>
+      <div id="wedList"></div>
+    </div>
+      <button id="wedButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+        <i class="material-icons">add</i>
+      </button>
+    <hr>
+
+    <div id="thu" class=container>
+      <h3>Thursday</h3>
+      <div id="thuList"></div>
+    </div>
+      <button id="thuButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+        <i class="material-icons">add</i>
+      </button>
+    <hr>
+
+    <div id="fri" class=container>
+      <h3>Friday</h3>
+      <div id="friList"></div>
+    </div>
+    <button id="friButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
       <i class="material-icons">add</i>
     </button>
-  </div>
-  <hr>
+    <hr>
 
-  <div id="thu" class=container>
-  <h3>Thursday</h3>
-  <div id="thuList"></div>
-  <button id="thuButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
-    <i class="material-icons">add</i>
-  </button>
-  </div>
-  <hr>
+    <div id="sat" class=container>
+      <h3>Saturday</h3>
+      <div id="satList"></div>
+    </div>
+      <button id="satButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+        <i class="material-icons">add</i>
+      </button>
+    <hr>
 
-  <div id="fri" class=container>
-  <h3>Friday</h3>
-  <div id="friList"></div>
-  <button id="friButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
-    <i class="material-icons">add</i>
-  </button>
-  </div>
-  <hr>
+    <div id="sun" class=container>
+      <h3>Sunday</h3>
+      <div id="sunList"></div>
+    </div>
+      <button id="sunButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+        <i class="material-icons">add</i>
+      </button>
+    <hr>
 
-  <div id="sat" class=container>
-  <h3>Saturday</h3>
-  <div id="satList"></div>
-  <button id="satButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
-    <i class="material-icons">add</i>
-  </button>
-  </div>
-  <hr>
+    <div class="modal fade" id="addCustomDialog" tabindex="-1" role="dialog" aria-labelledby="Add custom dialog"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Create Custom Plan</h5>
+          </div>
+          <div class="modal-body">
+            <span>Choose an Exercise:</span>
+            <div id="exerciseName">
+              <!-- <label for="exercise-names">Choose an exercise:</label> -->
+              <select onchange="yesnoCheck(this);" name="exercise-names" id="exercise-names">
+                <option value="custom" selected>Custom</option>
+                <option value="chestPress">Chest Press</option>
+                <option value="benchPress">Bench Press</option>
+                <option value="squats">Squats</option>
+              </select>
 
-  <div id="sun" class=container>
-  <h3>Sunday</h3>
-  <div id="sunList"></div>
-  <button id="sunButton" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
-    <i class="material-icons">add</i>
-  </button>
-  </div>
-  <hr>
+              <div id="ifYes" style="display: block;">
+                <br>
+                <label for="customName">Exercise Name:</label>
+                <br>
+                <input type="text" id="customName" name="customName" /><br />
+              </div>
 
-  <div class="modal fade" id="addCustomDialog" tabindex="-1" role="dialog" aria-labelledby="Add custom dialog"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Create Custom Plan</h5>
-        </div>
-        <div class="modal-body">
-          <span>Choose an Exercise:</span>
-          <div id="exerciseName">
-            <!-- <label for="exercise-names">Choose an exercise:</label> -->
-            <select onchange="yesnoCheck(this);" name="exercise-names" id="exercise-names">
-              <option value="custom" selected>Custom</option>
-              <option value="chestPress">Chest Press</option>
-              <option value="benchPress">Bench Press</option>
-              <option value="squats">Squats</option>
-            </select>
-
-            <div id="ifYes" style="display: block;">
-              <br>
-              <label for="customName">Exercise Name:</label>
-              <br>
-              <input type="text" id="customName" name="customName" /><br />
+              <!-- a little scuffed but this works -->
+              <script type="text/javascript">
+                function yesnoCheck(that) {
+                  if (that.value == "custom") {
+                    document.getElementById("ifYes").style.display = "block";
+                  } else {
+                    document.getElementById("ifYes").style.display = "none";
+                  }
+                }
+              </script>
             </div>
 
-            <!-- a little scuffed but this works -->
-            <script type="text/javascript">
-              function yesnoCheck(that) {
-                if (that.value == "custom") {
-                  document.getElementById("ifYes").style.display = "block";
-                } else {
-                  document.getElementById("ifYes").style.display = "none";
-                }
-              }
-            </script>
+            <div class="form-group bmd-form-group">
+              <label for="inputSets" class="bmd-label-floating">Target Sets</label>
+              <input type="number" class="form-control" id="inputSets">
+            </div>
+            <div class="form-group">
+              <label for="inputReps" class="bmd-label-floating">Target Repetitions Per Set</label>
+              <input type="number" class="form-control" id="inputReps">
+            </div>
+            <div class="form-group">
+              <label for="inputWeight" class="bmd-label-floating">Target Weight (lbs)</label>
+              <input type="number" class="form-control" id="inputWeight">
+            </div>
           </div>
-
-          <div class="form-group bmd-form-group">
-            <label for="inputSets" class="bmd-label-floating">Target Sets</label>
-            <input type="number" class="form-control" id="inputSets">
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+            <button id="submitAddCustom" type="button" class="btn btn-primary" data-dismiss="modal">CREATE</button>
           </div>
-          <div class="form-group">
-            <label for="inputReps" class="bmd-label-floating">Target Repetitions Per Set</label>
-            <input type="number" class="form-control" id="inputReps">
-          </div>
-          <div class="form-group">
-            <label for="inputWeight" class="bmd-label-floating">Target Weight (lbs)</label>
-            <input type="number" class="form-control" id="inputWeight">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
-          <button id="submitAddCustom" type="button" class="btn btn-primary" data-dismiss="modal">CREATE</button>
         </div>
       </div>
     </div>
-  </div>
-  <br>
+    <br>
 
-  <btn id="customBack" type="button" class="btn">back</btn>
+    <btn id="customBack" type="button" class="btn">back</btn>
 
-  <btn id="customSave" type="button" class="btn">save</btn>
+    <btn id="customSave" type="button" class="btn">save</btn>
 
-  <!-- <btn id="customCreate" type="button" class="btn">create</btn> -->
+    <!-- <btn id="customCreate" type="button" class="btn">create</btn> -->
 
 
 
