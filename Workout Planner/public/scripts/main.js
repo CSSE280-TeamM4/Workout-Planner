@@ -218,7 +218,6 @@ rhit.ExercisesManager = class {
         changeListener();
       } else {
         console.log("No such document!");
-        // window.location.href = "/"'
       }
     });
   }
@@ -226,32 +225,9 @@ rhit.ExercisesManager = class {
     this._unsubscribe();
   }
 
-  // get length() {
-  //   return Object.keys(docSnapshot.get("Weekday.Monday")).length
-  // }
   getExercisesFor(day) {
     return this._documentSnapshot.get("Weekday")[day];
-    // return Object.keys(this._documentSnapshots[index].get("Weekday.Monday")).length;
   }
-
-  // getExerciseAtIndex(index) {
-  //   const docSnapshot = this._documentSnapshots[index];
-  //   // console.log(docSnapshot.get("Weekday.Monday"));
-  //   const ex = new rhit.WorkoutPlan(
-  //     // docSnapshot.id,
-  //     // docSnapshot.get("Weekday")
-  //     docSnapshot.id,
-  //     docSnapshot.get("Name"),
-  //     docSnapshot.get("Goal"),
-  //     docSnapshot.get("Difficulty"),
-  //     docSnapshot.get("Days"),
-  //     docSnapshot.get("uid"),
-  //     docSnapshot.get("time"),
-  //     docSnapshot.get("favorite"),
-  //     docSnapshot.get("Weekday")
-  //   );
-  // return ex;
-  // }
 
   update(day, exName, sets, reps, weight) {
     this._ref
@@ -364,8 +340,8 @@ rhit.MyPlansController = class {
   _createCard(wp) {
     return htmlToElement(
       ` <div style="width: 18rem;">
-      <div class="card-body">
-        <h5 class="card-title">${wp.name}</h5>
+      <div class="card">
+        <h5 class="card-title">&nbsp;&nbsp;&nbsp;&nbsp;${wp.name}</h5>
         
       </div>
     </div>`
@@ -532,13 +508,35 @@ rhit.CustomPlanController = class {
       day = "Sunday";
     };
     document.querySelector("#submitAddCustom").onclick = (event) => {
-      const exName = document.querySelector("#customName").value;
+      let exName;
+      if (document.querySelector("#customName").value){
+        exName = document.querySelector("#customName").value;
+      }
+      else{
+        // console.log(exName = document.querySelector("#exercise-names").innerHTML);
+        var s = document.getElementsByName('exercise-names')[0];
+        var text = s.options[s.selectedIndex].text;
+        console.log(text);
+        exName = text;
+      }
       const sets = document.querySelector("#inputSets").value;
       const reps = document.querySelector("#inputReps").value;
       const weight = document.querySelector("#inputWeight").value;
       rhit.exercisesManager.update(day, exName, sets, reps, weight);
-
     };
+    $("#addCustomDialog").on("show.bs.modal", (event) => {
+      
+      document.querySelector("#customName").value = "";
+      document.querySelector("#inputSets").value = "";
+      document.querySelector("#inputReps").value = "";
+      document.querySelector("#inputWeight").value = "";
+      document.querySelector("#exercise-names").value = "custom";
+      document.getElementById("ifYes").style.display = "block";
+    });
+    $("#addCustomDialog").on("shown.bs.modal", (event) => {
+    //   // 	//post animation
+    //   document.querySelector("#inputQuote").focus();
+    });
 
     document.querySelector("#customBack").onclick = (event) => {
       window.location.href = "/myPlans.html";
@@ -547,6 +545,10 @@ rhit.CustomPlanController = class {
       rhit.exercisesManager.update(day, exName, sets, reps, weight);
       alert("Saved");
     };
+
+    // document.querySelector("#edit").onclick = (event) => {
+      
+    // };
     // document.querySelector("#customCreate").onclick = (event) => {
     // name, goal, diff, days, favorite, time, exercises
     // rhit.myPlansManager.add(exName, "1", "1", "1", false, "60", Weekday);
@@ -564,9 +566,16 @@ rhit.CustomPlanController = class {
         <p class="extext">&nbsp;&nbsp;&nbsp;&nbsp;Sets: ${val.sets}</p>
         <p class="extext">&nbsp;&nbsp;&nbsp;&nbsp;Reps: ${val.reps}</p>
         <p class="extext">&nbsp;&nbsp;&nbsp;&nbsp;Weight: ${val.weight} lb</p>
+        
       </div>
     </div>`
     );
+    // <button id="edit${key}" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+    //     <i class="material-icons">edit</i>
+    //     </button>
+    //     <button id="delete${key}" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addCustomDialog">
+    //     <i class="material-icons">delete</i>
+    //     </button>
     // <input type="radio" id="favorite" name="fav_plan" value="${wp.name}">
     //     <label for="favorite">Favorite</label><br></br>
   }
