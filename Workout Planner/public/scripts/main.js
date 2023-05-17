@@ -57,8 +57,11 @@ rhit.MyPlansManager = class {
       ["uid"]: rhit.fbAuthManager.uid,
       ["time"]: time,
       ["Weekday"]: exercises,
+      ["startDate"]: firebase.firestore.Timestamp.now(),
     });
   }
+
+
   addExisting(wp) {
     this.add(
       wp.name,
@@ -96,12 +99,10 @@ rhit.MyPlansManager = class {
       docSnapshot.get("favorite"),
       docSnapshot.get("Weekday")
     );
-    // console.log(docSnapshot.get("Weekday.Monday"));
-    if (docSnapshot.get("Weekday.Friday")) {
-      console.log(docSnapshot.get("Name") + " " + Object.keys(docSnapshot.get("Weekday.Friday")).length);
-      // console.log(Object.values(docSnapshot.data().docSnapshot.get("Weekday")));
+    // if (docSnapshot.get("Weekday.Friday")) {
+    //   console.log(docSnapshot.get("Name") + " " + Object.keys(docSnapshot.get("Weekday.Friday")).length);
 
-    }
+    // }
     return wp;
   }
 };
@@ -276,6 +277,19 @@ rhit.SinglePlanManager = class {
     this._unsubscribe();
   }
 
+  setFav(fav) {
+    this._ref
+      .update({
+        ["favorite"]: fav
+      })
+      .then(() => {
+        console.log("document successfully updated");
+      })
+      .catch(function (error) {
+        console.log("Error adding document: ", error);
+      });
+  }
+
   update(name, goal, diff, days, favorite, time, exercises) {
     // console.log("update quote movie");
     this._ref
@@ -318,23 +332,15 @@ rhit.MyPlansController = class {
   constructor() {
     document.querySelector("#submitCustomDialog").onclick = (event) => {
       const planName = document.querySelector("#inputPlanName").value;
-      rhit.myPlansManager.add(planName, "1", "1", "1", false, "60", "1");
+      rhit.myPlansManager.add(planName, "", "", "", false, "", "");
     };
     document.querySelector("#existingButton").onclick = (event) => {
       window.location.href = "/existingPlans.html";
     };
 
-    // will come back to this
-    //   $("#addCustomDialog").on("show.bs.modal", (event) => {
-    //     //pre animation
-    //     document.querySelector("#inputQuote").value = "";
-    //     document.querySelector("#inputMovie").value = "";
-    //   });
-    //   $("#addCustomDialog").on("shown.bs.modal", (event) => {
-    //     //post animation
-    //     document.querySelector("#inputQuote").focus();
-    //     // document.querySelector("#inputMovie").value = "";
-    //   });
+    $("#addCustomDialog").on("show.bs.modal", (event) => {
+      document.querySelector("#inputPlanName").value = "";
+    });
     rhit.myPlansManager.beginListening(this.updateList.bind(this));
   }
   _createCard(wp) {
@@ -346,8 +352,6 @@ rhit.MyPlansController = class {
       </div>
     </div>`
     );
-    // <input type="radio" id="favorite" name="fav_plan" value="${wp.name}">
-    //     <label for="favorite">Favorite</label><br></br>
   }
 
   updateList() {
@@ -389,24 +393,6 @@ rhit.SinglePlanController = class {
     document.querySelector("#editPlan").onclick = (event) => {
       window.location.href = `/customPlans.html?id=${planId}`;
     };
-    // document
-    //   .querySelector("#submitEditPlan")
-    //   .addEventListener("click", (event) => {
-    //     const quote = document.querySelector("#inputQuote").value;
-    //     const movie = document.querySelector("#inputMovie").value;
-    //     // rhit.fbSingleQuoteManager.update(quote, movie);
-    //   });
-    // $("#editPlanDialog").on("show.bs.modal", (event) => {
-    //   //pre
-    //   // document.querySelector("#inputQuote").value = rhit.fbSingleQuoteManager.quote;
-    //   // document.querySelector("#inputMovie").value = rhit.fbSingleQuoteManager.movie;
-    //   document.querySelector("#inputQuote").value = "some plan";
-    //   document.querySelector("#inputMovie").value = "info";
-    // });
-    // $("#editPlanDialog").on("shown.bs.modal", (event) => {
-    //   // 	//post animation
-    //   document.querySelector("#inputQuote").focus();
-    // });
 
     document
       .querySelector("#submitDeletePlan")
@@ -414,7 +400,6 @@ rhit.SinglePlanController = class {
         rhit.singlePlanManager
           .delete()
           .then(function () {
-            // console.log("document deleted");
             window.location.href = "/myPlans.html";
           })
           .catch(function (error) {
@@ -422,6 +407,28 @@ rhit.SinglePlanController = class {
           });
       });
 
+    // document.querySelector("#customSetActive").onclick = (event) => {
+    //   for (let i = 0; i < rhit.myPlansManager.length; i++) {
+    //     console.log(rhit.myPlansManager.length);
+    //     const wp = rhit.myPlansManager.getPlanAtIndex(i);
+    //     this.singlePlanManager = new rhit.SinglePlanManager(wp.id);
+
+    //     // wp.favorite
+    //     if (wp.uid == rhit.fbAuthManager.uid) {
+    //       console.log(wp.id);
+    //       if (wp.id === planId) {
+    //         console.log(wp.id);
+    //         this.singlePlanManager.setFav(true);
+    //       }
+    //       else {
+    //         this.singlePlanManager.setFav(false);
+    //       }
+    //     }
+    //   }
+    //   alert("This plan has been set has active");
+    // };
+
+    // rhit.myPlansManager.beginListening(this.updateList.bind(this));
     rhit.singlePlanManager.beginListening(this.updateView.bind(this));
   }
   updateView() {
@@ -483,7 +490,7 @@ rhit.MyAccountController = class {
 };
 
 rhit.CustomPlanController = class {
-  constructor() {
+  constructor(planId) {
 
     let day = "";
     document.querySelector("#monButton").onclick = (event) => {
@@ -509,10 +516,10 @@ rhit.CustomPlanController = class {
     };
     document.querySelector("#submitAddCustom").onclick = (event) => {
       let exName;
-      if (document.querySelector("#customName").value){
+      if (document.querySelector("#customName").value) {
         exName = document.querySelector("#customName").value;
       }
-      else{
+      else {
         // console.log(exName = document.querySelector("#exercise-names").innerHTML);
         var s = document.getElementsByName('exercise-names')[0];
         var text = s.options[s.selectedIndex].text;
@@ -525,7 +532,7 @@ rhit.CustomPlanController = class {
       rhit.exercisesManager.update(day, exName, sets, reps, weight);
     };
     $("#addCustomDialog").on("show.bs.modal", (event) => {
-      
+
       document.querySelector("#customName").value = "";
       document.querySelector("#inputSets").value = "";
       document.querySelector("#inputReps").value = "";
@@ -533,30 +540,30 @@ rhit.CustomPlanController = class {
       document.querySelector("#exercise-names").value = "custom";
       document.getElementById("ifYes").style.display = "block";
     });
-    $("#addCustomDialog").on("shown.bs.modal", (event) => {
-    //   // 	//post animation
-    //   document.querySelector("#inputQuote").focus();
-    });
 
     document.querySelector("#customBack").onclick = (event) => {
       window.location.href = "/myPlans.html";
     };
-    document.querySelector("#customSave").onclick = (event) => {
-      rhit.exercisesManager.update(day, exName, sets, reps, weight);
-      alert("Saved");
-    };
 
-    // document.querySelector("#edit").onclick = (event) => {
-      
-    // };
-    // document.querySelector("#customCreate").onclick = (event) => {
-    // name, goal, diff, days, favorite, time, exercises
-    // rhit.myPlansManager.add(exName, "1", "1", "1", false, "60", Weekday);
-    // alert("Created");
-    // };
-    // rhit.myPlansManager.add("custom", "1", "1", "1", false, "60", Weekday);
+    document.querySelector("#customSetActive").onclick = (event) => {
+      for (let i = 0; i < rhit.myPlansManager.length; i++) {
+        const wp = rhit.myPlansManager.getPlanAtIndex(i);
+        this.singlePlanManager = new rhit.SinglePlanManager(wp.id);
+
+        if (wp.uid == rhit.fbAuthManager.uid) {
+          if (wp.id === planId) {
+            this.singlePlanManager.setFav(true);
+          }
+          else {
+            this.singlePlanManager.setFav(false);
+          }
+        }
+      }
+      alert("This plan has been set has active");
+    };
     rhit.exercisesManager.beginListening(this.updateList.bind(this));
-    // rhit.myPlansManager.beginListening(this.updateList.bind(this));
+
+    rhit.myPlansManager.beginListening(this.updateList.bind(this));
   }
   _createCard(key, val) {
     return htmlToElement(
@@ -680,9 +687,56 @@ rhit.HomePageController = class {
 
 rhit.PastWorkoutsController = class {
   constructor() {
-    this.collapse();
+    let myPromise = new Promise(function (myResolve) {
+      // "Producing Code" (May take some time)
 
+      myResolve(); // when successful
+      myReject();  // when error
+    });
     rhit.myPlansManager.beginListening(this.updateList.bind(this));
+    // .then(function(){
+    console.log(rhit.myPlansManager.length);
+    // }).catch(function (error) {
+    //   console.log("failed to listen", error);
+    // });
+
+    this.collapse();
+    // var dt = new Date("December 25, 1995 23:15:00");
+    // console.log(dt.getDay());
+
+    //next monday
+    // var d = new Date();
+    // d.setDate(d.getDate() + (1 + 7 - d.getDay()) % 7);
+    // console.log(d);
+
+    //prev monday
+    var prevMonday = new Date();
+    prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + (7 - 1)) % 7);
+    console.log(prevMonday);
+
+    //  document.write("getDay() : " + dt.getDay() ); 
+    for (let i = 0; i < rhit.myPlansManager.length; i++) {
+      const wp = rhit.myPlansManager.getPlanAtIndex(i);
+      if (wp.uid == rhit.fbAuthManager.uid && wp.favorite == true) {
+
+        console.log(wp.name);
+        // const newCard = this._createCard(wp);
+
+        // newCard.onclick = (event) => {
+        //   console.log(wp.exercises);
+        //   rhit.existingPlansManager.addExisting(wp);
+        // };
+
+        // newList.appendChild(newCard);
+      }
+    }
+
+    document.querySelector("#backPlan").onclick = (event) => {
+      // window.location.href = "/account.html";
+      console.log(rhit.myPlansManager.length);
+
+    };
+
   }
   _createCard(wp) {
     console.log(wp.name);
@@ -749,7 +803,7 @@ rhit.ExistingPlansController = class {
     console.log(wp.name);
     return htmlToElement(
       ` <div style="width: 18rem;">
-      <div class="card-body">
+      <div class="card">
         <h5 class="card-title">${wp.name}</h5>
         <h6 class="subtitle">${wp.level}</h6>
         <h6 class="subtitle">${wp.sessions} days per week</h6>
@@ -792,6 +846,7 @@ rhit.main = function () {
   rhit.fbAuthManager = new rhit.FBAuthManager();
   rhit.fbAuthManager.beginListening();
   rhit.myPlansManager = new rhit.MyPlansManager();
+  // rhit.myPlansManager.beginListening(updateList());
   if (document.querySelector("#loginPage")) {
     this.fbAuthManager.startFirebaseUI();
   }
@@ -818,7 +873,8 @@ rhit.main = function () {
     }
 
     this.exercisesManager = new rhit.ExercisesManager(planId);
-    new rhit.CustomPlanController();
+
+    new rhit.CustomPlanController(planId);
   }
   if (document.querySelector("#existingPage")) {
     this.existingPlansManager = new rhit.ExistingPlansManager();

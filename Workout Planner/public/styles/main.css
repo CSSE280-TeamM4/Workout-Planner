@@ -26,6 +26,7 @@ body {
 
 .card{
   margin: 10px 0;
+  padding: 15px;
 }
 
 .excard{
@@ -344,6 +345,14 @@ body {
   /* border-top: 2px solid black; */
   padding-top: 10px;
   margin-top: 0;
+}
+
+button{}
+  /* background: -webkit-appearance(#800000); */
+  /* background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #7c7777), color-stop(1, #7c7777)); */
+  /* background: -ms-linear-gradient(bottom, #dfdfdf, #ffffff); */
+  /* background: -moz-linear-gradient(center bottom, #dfdfdf 0%, #ffffff 100%); */
+  /* background: -o-linear-gradient(#ffffff, #dfdfdf); */
 }
 
 .card {
