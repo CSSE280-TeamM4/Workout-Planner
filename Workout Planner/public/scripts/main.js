@@ -751,7 +751,8 @@ rhit.PastWorkoutsController = class {
   _createCard(prev) {
     // console.log(wp.name);
     return htmlToElement(
-      ` <button type="button" class="collapsible">${prev}</button>`
+      ` <button type="button" class="collapsible">${prev}</button>
+      <div id=expansion></div>`
     );
   }
   _contentCard(key, val) {
@@ -764,6 +765,9 @@ rhit.PastWorkoutsController = class {
 
   updateList() {
     const newList = htmlToElement(`<div id="pastList"></div>`);
+    const newExp = htmlToElement(`<div id="expansion"></div>`);
+    const oldList = document.querySelector("#pastList");
+    const oldExp = document.querySelector("#expansion");
     for (let i = 0; i < rhit.myPlansManager.length; i++) {
       const wp = rhit.myPlansManager.getPlanAtIndex(i);
       if (wp.uid == rhit.fbAuthManager.uid && wp.favorite == true) {
@@ -771,84 +775,88 @@ rhit.PastWorkoutsController = class {
         // this.exercisesManager.beginListening(this.updateList.bind(this));
         // wp.id
         var newCard;
-        var prevMonday = new Date();
+        // var prevMonday = new Date();
+        var yesterday = new Date();
         var lastDay = wp.startDate.toDate();
         var content;
-        lastDay.setDate(lastDay.getDate() - (lastDay.getDay() - 7));
-        // console.log(lastDay);
+        // lastDay.setDate(lastDay.getDate() - (lastDay.getDay() - 7));
+        lastDay.setDate(lastDay.getDate() + 1);
+        const week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        // console.log("lastday", lastDay);
 
-        while (prevMonday >= lastDay) {
-          if (prevMonday.getDay() == 1) {
-            prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + 7));
-          } else {
-            prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + ((7) - 1)) % 7);
+        let exercises = rhit.exercisesManager.getExercisesFor("Monday");
+        content = [Object.entries(exercises).length];
+        if (exercises) {
+          // console.log(Object.entries(exercises).length);
+          // console.log(exercises);
+          let i = 0;
+          for (const [key, value] of Object.entries(exercises)) {
+            // console.log(key, value);
+            // const wp = [key, value];
+            const getKey = key;
+            const getVal = value;
+            // console.log([key, value]);
+            // const newCard = this._createCard(getKey, getVal);
+
+            content[i] = this._contentCard(getKey, getVal);
+            i++;
           }
-          newCard = this._createCard(prevMonday);
-          console.log(prevMonday);
-
-          let exercises = rhit.exercisesManager.getExercisesFor("Monday");
-          if (exercises) {
-
-            for (const [key, value] of Object.entries(exercises)) {
-              console.log(key, value);
-              // const wp = [key, value];
-              const getKey = key;
-              const getVal = value;
-              // console.log([key, value]);
-              // const newCard = this._createCard(getKey, getVal);
-
-              content = this._contentCard(getKey, getVal);
-            }
-          }
-          newCard.onclick = (event) => {
-            // console.log(wp.exercises);
-            if (document.querySelector("#appear")) {
-              // newList.removeChild(content);
-              document.querySelector("#appear").remove();
-            } else {
-              newList.appendChild(content);
-            }
-          };
-
-          newList.appendChild(newCard);
-
         }
-        // if (prevMonday >= wp.startDate.toDate()){
-        //   console.log("hi");
-        // }
-        // while (prevMonday >= wp.startDate.toDate()) {
-        // i++;
-        // if (prevMonday >= wp.startDate.toDate()){
-        //   console.log("hi");
-        // }
-        // }
 
+        let j = 0;
+        while (yesterday >= lastDay && j < 10) {
+          // for (let j = 0; j < 5; j++){
+          // if(yesterday.getDay() == 1){
+          //   let exercises = rhit.exercisesManager.getExercisesFor("Monday");
+          // }
+          let exercises = rhit.exercisesManager.getExercisesFor(week[yesterday.getDay()]);
+          // console.log(exercises);
+          if (exercises) {
+            newCard = this._createCard(yesterday);
+            newList.appendChild(newCard);
+            newCard.onclick = (event) => {
+              console.log(exercises);
+              //   if (document.querySelector("#appear")) {
+              //     // newList.removeChild(content);
+              //     document.querySelector("#appear").remove();
+              //   } else {
+              //     newExp.appendChild(content);
+              //   }
+              let i = 0;
+              for (const [key, value] of Object.entries(exercises)) {
+                // console.log(key, value);
+                // const wp = [key, value];
+                const getKey = key;
+                const getVal = value;
+                // console.log([key, value]);
+                // const newCard = this._createCard(getKey, getVal);
 
-
-        console.log(wp.exercises);
-        // const newCard = this._createCard(wp);
-
-        // console.log(newList);
-        // console.log(document.querySelector("appear"));
-        // newCard.onclick = (event) => {
-        //   // console.log(wp.exercises);
-        //   const content = this._contentCard(wp);
-        //   if (document.querySelector("#appear")) {
-        //     // newList.removeChild(content);
-        //     document.querySelector("#appear").remove();
-        //   } else {
-        //     newList.appendChild(content);
-        //   }
-        // };
-
-        // newList.appendChild(newCard);
+                content[i] = this._contentCard(getKey, getVal);
+                console.log(content[i]);
+                  if (document.querySelector("#appear")) {
+                  // newList.removeChild(content);
+                  document.querySelector("#appear").remove();
+                } else {
+                  newExp.appendChild(content[i]);
+                }
+                // newExp.appendChild(content[i]);
+                i++;
+              }
+            };
+          }
+          yesterday.setDate(yesterday.getDate() - 1);
+          // console.log(yesterday.getDay());
+          j++;
+        }
       }
     }
 
-    const oldList = document.querySelector("#pastList");
+    oldExp.removeAttribute("id");
+    oldExp.hidden = true;
     oldList.removeAttribute("id");
     oldList.hidden = true;
 
+    oldExp.parentElement.appendChild(newExp);
     oldList.parentElement.appendChild(newList);
   }
   collapse() {
@@ -946,7 +954,7 @@ rhit.main = function () {
       window.location.href = "/";
     }
     this.exercisesManager = new rhit.ExercisesManager(planId);
-    
+
     new rhit.PastWorkoutsController();
   }
   if (document.querySelector("#plansPage")) {
