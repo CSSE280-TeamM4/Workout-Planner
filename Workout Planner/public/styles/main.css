@@ -29,6 +29,12 @@ body {
   padding: 15px;
 }
 
+.favorite-true{
+  background: #32cf32;
+}
+.appear{
+  
+}
 .excard{
   padding-top:10px;
   padding-left: 50px;
