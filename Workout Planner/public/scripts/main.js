@@ -442,8 +442,9 @@ rhit.TodaysWorkoutController = class {
     this.favoritePlan = null;
     this._documentSnapshots = [];
     this._ref = firebase.firestore().collection("Workout Plans");
+    console.log(this.favArg);
     this.favoritePlan = this.getFavorite();
-
+    console.log(this.favArg);
     this.displayPlan();
   }
 
@@ -467,13 +468,14 @@ rhit.TodaysWorkoutController = class {
           docSnapshot.get("Weekday")
         );
         if (wp.favorite == true && wp.uid == rhit.fbAuthManager.uid) {
-          console.log(wp);
           fav = wp;
-          break;
+          return fav;
         }
       }
-      return fav;
+      
+      
     });
+
   }
   displayPlan() {
     console.log(this.favoritePlan);
