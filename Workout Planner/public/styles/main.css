@@ -32,7 +32,7 @@ body {
   padding: 15px;
 }
 
-.favorite-true{
+#favorite-true{
   background: #32cf32;
 }
 #expansion{
@@ -46,7 +46,9 @@ body {
   padding-left: 50px;
   /* margin */
 }
-
+.btn{
+  background-color: #949797;
+}
 .card-title,
 .card-subtitle{
   white-space: nowrap;
@@ -329,7 +331,20 @@ body {
 }
 
 #fail {
-  background-color: #dd6c6c;
+  background-color: #ea4a4a;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+#complete {
+  background-color: #32cf32;
+  /* #32cf32 */
   color: #ffffff;
   cursor: pointer;
   padding: 18px;
@@ -342,8 +357,15 @@ body {
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 .active,
-.collapsible:hover {
-  background-color: #32cf32;
+#future:hover{
+  background-color: rgb(180, 178, 178);
+
+}
+#complete:hover {
+  background-color: #57D757;
+}
+#fail:hover {
+  background-color: #d95d5d;
 }
 
 
@@ -361,13 +383,13 @@ body {
   margin-top: 0;
 }
 
-button{}
+/* button{} */
   /* background: -webkit-appearance(#800000); */
   /* background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #7c7777), color-stop(1, #7c7777)); */
   /* background: -ms-linear-gradient(bottom, #dfdfdf, #ffffff); */
   /* background: -moz-linear-gradient(center bottom, #dfdfdf 0%, #ffffff 100%); */
   /* background: -o-linear-gradient(#ffffff, #dfdfdf); */
-}
+/* } */
 
 .card {
   background-color: #DDDDDD;
