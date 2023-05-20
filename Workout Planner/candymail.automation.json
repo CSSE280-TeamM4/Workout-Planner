@@ -1,0 +1,32 @@
+{
+    "workflows": [
+      {
+        "name": "workflow1",
+        "description": "Welcome users to the site",
+        "trigger_name": "welcome",
+        "emails": [
+          {
+            "trigger": "time",
+            "sendDelay": 0,
+            "subject": "welcome",
+            "body": "<h1>Welcome to workout planner</h1><p>Make a new plan or explore existing plans to get started</p>",
+            "from": "brennansatkoski@gmail.com"
+          }
+        ]
+      },
+      {
+        "name": "workflow2",
+        "description": "tell user about pro features 2",
+        "trigger_name": "proplan",
+        "emails": [
+          {
+            "trigger": "time",
+            "sendDelay": 1,
+            "subject": "w2e1",
+            "body": "Customizations are great",
+            "from": "sunnyashiin@gmail.com"
+          }
+        ]
+      }
+    ]
+  }

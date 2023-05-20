@@ -12,6 +12,10 @@ rhit.favoritePlan = null;
 rhit.pastWorkoutsManager = null;
 // rhit.daysInARow = null;
 
+
+
+
+
 let weekday = new Date().getDay();
 let streak = 0;
 
@@ -218,6 +222,7 @@ rhit.FBAuthManager = class {
   beginListening() {
     firebase.auth().onAuthStateChanged((user) => {
       this._user = user;
+      runWorkflow('workflow1', this._user.email)
     });
   }
 
