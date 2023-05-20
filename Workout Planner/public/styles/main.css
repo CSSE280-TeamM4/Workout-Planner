@@ -7,6 +7,9 @@ body {
   color: white;
 }
 
+#pageName{
+  z-index: 999;
+}
 .page-container {
   margin-top: 150px;
 }
