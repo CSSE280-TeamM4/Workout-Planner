@@ -783,8 +783,8 @@ rhit.CustomPlanController = class {
       document.querySelector("#inputSets").value = "";
       document.querySelector("#inputReps").value = "";
       document.querySelector("#inputWeight").value = "";
-      document.querySelector("#exercise-names").value = "custom";
-      document.getElementById("ifYes").style.display = "block";
+      // document.querySelector("#exercise-names").value = "custom";
+      // document.getElementById("ifYes").style.display = "block";
     });
 
     document.querySelector("#customBack").onclick = (event) => {
