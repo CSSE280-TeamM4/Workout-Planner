@@ -788,7 +788,9 @@ rhit.CustomPlanController = class {
     });
 
     document.querySelector("#customBack").onclick = (event) => {
-      window.location.href = "/myPlans.html";
+      // window.location.href = "/myPlans.html";
+      window.location.href = `/plan.html?id=${planId}`;
+
     };
 
     // document.querySelector("#customSetActive").onclick = (event) => {
