@@ -902,7 +902,9 @@ rhit.CustomPlanController = class {
     });
 
     document.querySelector("#customBack").onclick = (event) => {
-      window.location.href = "/myPlans.html";
+      // window.location.href = "/myPlans.html";
+      window.location.href = `/plan.html?id=${planId}`;
+
     };
 
     // document.querySelector("#customSetActive").onclick = (event) => {
@@ -1022,14 +1024,21 @@ rhit.HomePageController = class {
     document.querySelector("#myPlansbtn").onclick = (event) => {
       window.location.href = "/myPlans.html";
     };
+    document.querySelector("#mapbtn").onclick = (event) => {
+      window.location.href = "/map.html";
+    };
+    document.querySelector("#signbtn").onclick = (event) => {
+      rhit.fbAuthManager.signOut();
+      window.location.href = "/home";
+    };
 
     // document.querySelector("#logbtn").onclick = (event) => {
     //   window.location.href = `/workoutLog.html`;
     //   // window.location.href = `/plan.html?id=${wp.id}`;
     // };
-    document.querySelector("#settingsbtn").onclick = (event) => {
-      window.location.href = "/account.html";
-    };
+    // document.querySelector("#settingsbtn").onclick = (event) => {
+    //   window.location.href = "/account.html";
+    // };
     this.updateView();
     rhit.myPlansManager.beginListening(this.updateView.bind(this));
     rhit.pastWorkoutsManager.beginListening(this.updateView.bind(this));
