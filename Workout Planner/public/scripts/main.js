@@ -1029,7 +1029,7 @@ rhit.HomePageController = class {
     };
     document.querySelector("#signbtn").onclick = (event) => {
       rhit.fbAuthManager.signOut();
-      window.location.href = "/home";
+      window.location.href = "/";
     };
 
     // document.querySelector("#logbtn").onclick = (event) => {
