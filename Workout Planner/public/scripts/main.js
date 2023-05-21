@@ -1522,6 +1522,26 @@ rhit.ExistingPlansController = class {
 rhit.MapPageController = class {
   constructor() {
     this.imageZoom("mapimage", "resultimage");
+    document.querySelector("#dumbellBtn").onclick = (event) => {
+      document.querySelector("#sectionName").innerHTML = "Dumbell Rack";
+      document.querySelector("#sectionImage").src = "images/wImage-dumbells.jpg";
+      document.querySelector("#sectionDesc").innerHTML = "This area has dumbells and freeweight benches.";
+    }
+    document.querySelector("#squatBtn").onclick = (event) => {
+      document.querySelector("#sectionName").innerHTML = "Squat Racks";
+      document.querySelector("#sectionImage").src = "images/wImage-squat.jpg";
+      document.querySelector("#sectionDesc").innerHTML = "This area has squat racks for squatting, benching, and other barbell exercises.";
+    }
+    document.querySelector("#cardioBtn").onclick = (event) => {
+      document.querySelector("#sectionName").innerHTML = "Cardio room";
+      document.querySelector("#sectionImage").src = "images/wImage-cardio.jpg";
+      document.querySelector("#sectionDesc").innerHTML = "This area has some assorted weight machines and a variety of cardio machines";
+    }
+    document.querySelector("#assortedBtn").onclick = (event) => {
+      document.querySelector("#sectionName").innerHTML = "Assorted Machines";
+      document.querySelector("#sectionImage").src = "images/wImage-assorted.jpg";
+      document.querySelector("#sectionDesc").innerHTML = "This area has assorted weight machines";
+    }
   }
   imageZoom(imgID, resultID) {
     var img, lens, result, cx, cy;
