@@ -536,9 +536,10 @@ rhit.SinglePlanManager = class {
 
 rhit.TodaysWorkoutManager = class {
   constructor() {
-    this._documentSnapshot = {};
-    this._unsubscribe = null;
+    this._documentSnapshots = [];
     this._ref = firebase.firestore().collection("Workout Plans");
+    // console.log(this._ref);
+    this._unsubscribe = null;
   }
   beginListening(changeListener) {
     this._unsubscribe = this._ref.onSnapshot((doc) => {
@@ -681,50 +682,163 @@ rhit.SinglePlanController = class {
   }
 };
 
-rhit.TodaysWorkoutController = class {
+rhit.NextWorkoutController = class {
   constructor() {
-    this.favoritePlan = null;
-    this._documentSnapshots = [];
-    this._ref = firebase.firestore().collection("Workout Plans");
-    rhit.todaysWorkoutManager.beginListening(this.updateList.bind(this));
+
+    rhit.exercisesManager.beginListening(this.updateList.bind(this));
+    rhit.myPlansManager.beginListening(this.updateList.bind(this));
   }
-  _createCard(wp) {
+  _createCard(prev) {
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    
     return htmlToElement(
-      ` <div style="width: 18rem;">
-      <div class="card favorite-${wp.favorite}">
-        <h5 class="card-title">&nbsp;&nbsp;&nbsp;&nbsp;${wp.name}</h5>
-        
-      </div>
-    </div>`
+      ` <button type="button" id="future" class="collapsible">${weekdays[prev.getDay()]}, ${months[prev.getMonth()]} ${prev.getDate()}, ${prev.getFullYear()}</button>
+      <div id=expansion></div>`
+    );
+  }
+
+  _contentDay(day) {
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    return htmlToElement(
+      `<h5 id="appear">&emsp;${weekdays[day.getDay()]}, ${
+        months[day.getMonth()]
+      } ${day.getDate()}, ${day.getFullYear()}</h5>`
+    );
+  }
+  _contentCard(key, val) {
+    return htmlToElement(
+      `<div id="appear">
+      <div>&emsp;&emsp;&emsp;Exercise: ${key}</div>
+      <div>&emsp;&emsp;&emsp;&emsp;Sets: ${val.sets}</div>
+      <div>&emsp;&emsp;&emsp;&emsp;Repetitions: ${val.reps}</div>
+      <div>&emsp;&emsp;&emsp;&emsp;Weight: ${val.weight} lb</div>
+      <br>
+      <div>`
     );
   }
 
   updateList() {
-    const newList = htmlToElement(`<div id="exercisesList"></div>`);
+    // rhit.upcomingWorkoutsManager.set(8, 5, 2023, "VLn6LxqYobJBl4Hfqnzf", "Y1OBxH2dz9ffFrM46Tw5m7kNXoK2", false)
 
+    const newDay = htmlToElement(`<div id="daySelected"></div>`);
+    const newList = htmlToElement(`<div id="upcomingList"></div>`);
+    const newExp = htmlToElement(`<div id="expansion"></div>`);
+    const oldDay = document.querySelector("#daySelected");
+    const oldList = document.querySelector("#upcomingList");
+    const oldExp = document.querySelector("#expansion");
     for (let i = 0; i < rhit.myPlansManager.length; i++) {
       const wp = rhit.myPlansManager.getPlanAtIndex(i);
-      if (wp.favorite == true) {
-        const newCard = this._createCard(wp);
+      if (wp.uid == rhit.fbAuthManager.uid && wp.favorite == true) {
+        console.log(wp.name);
+        this.exercisesManager = new rhit.ExercisesManager(wp.id);
+        var newCard;
+        var tmrw = new Date();
+        var lastDay = wp.startDate.toDate();
+        var content;
+        lastDay.setDate(lastDay.getDate() + 1);
+        const week = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
 
-        newCard.onclick = (event) => {
-          window.location.href = `/plan.html?id=${wp.id}`;
-        };
-        //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
-        if (wp.uid == rhit.fbAuthManager.uid) {
-          // newCard.onclick = (event) => {
-          // 	window.location.href = `/moviequote.html?id=${mq.id}`;
-          // }
+        let j = 0;
+        while (j < 1) {
+          let exercises = rhit.exercisesManager.getExercisesFor(
+            week[tmrw.getDay()]
+          );
+          if (exercises) {
+            rhit.upcomingWorkoutsManager.set(tmrw.getDate(), tmrw.getMonth() + 1, tmrw.getFullYear(), wp.id, wp.uid, false)
 
-          newList.appendChild(newCard);
+            content = [Object.entries(exercises).length];
+            j++;
+            newCard = this._createCard(tmrw);
+            newList.appendChild(newCard);
+            const selectedDay = this._contentDay(tmrw);
+
+            newCard.onclick = (event) => {
+              let i = 0;
+              for (const [key, value] of Object.entries(exercises)) {
+                const getKey = key;
+                const getVal = value;
+
+                content[i] = this._contentCard(getKey, getVal);
+                i++;
+              }
+              // if (document.querySelector("#appear")) {
+              const collection = document.querySelectorAll("#appear");
+              for (let i = 0; i < collection.length; i++) {
+                collection[i].remove();
+              }
+              newDay.appendChild(selectedDay);
+              // } else {
+              for (let k = 0; k < Object.entries(exercises).length; k++) {
+                newExp.appendChild(content[k]);
+              }
+              // }
+            };
+          }
+          tmrw.setDate(tmrw.getDate() + 1);
         }
       }
     }
 
-    const oldList = document.querySelector("#plansList");
+    oldExp.removeAttribute("id");
+    oldExp.hidden = true;
     oldList.removeAttribute("id");
     oldList.hidden = true;
-
+    oldDay.removeAttribute("id");
+    oldDay.hidden = true;
+    oldDay.parentElement.appendChild(newDay);
+    oldExp.parentElement.appendChild(newExp);
     oldList.parentElement.appendChild(newList);
   }
 };
@@ -901,9 +1015,7 @@ rhit.CustomPlanController = class {
 
 rhit.HomePageController = class {
   constructor() {
-    document.querySelector("#TodaysWorkout").onclick = (event) => {
-      window.location.href = "/todaysWorkout.html";
-    };
+    
     document.querySelector("#workoutStreak").onclick = (event) => {
       // window.location.href = "/Calendar.html";
     };
@@ -946,6 +1058,9 @@ rhit.HomePageController = class {
         };
         document.querySelector("#prevbtn").onclick = (event) => {
           window.location.href = `/previousWorkouts.html?id=${wp.id}`;
+        };
+        document.querySelector("#TodaysWorkout").onclick = (event) => {
+          window.location.href = `/todaysWorkout.html?id=${wp.id}`;
         };
       }
     }
@@ -1536,8 +1651,16 @@ rhit.main = function () {
     new rhit.SinglePlanController(planId);
   }
   if (document.querySelector("#todayPage")) {
-    rhit.todaysWorkoutManager = new rhit.TodaysWorkoutManager();
-    new rhit.TodaysWorkoutController();
+    const queryString = window.location.search;
+    console.log(queryString);
+    const urlParams = new URLSearchParams(queryString);
+    const planId = urlParams.get("id");
+
+    if (!planId) {
+      window.location.href = "/";
+    }
+    this.exercisesManager = new rhit.ExercisesManager(planId);
+    new rhit.NextWorkoutController();
   }
   if (document.querySelector("#mapPage")) {
     new rhit.MapPageController();
