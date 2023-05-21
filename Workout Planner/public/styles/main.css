@@ -429,6 +429,8 @@ body {
 
 .img-zoom-container {
   position: relative;
+  width: 100%;
+
 }
 
 .img-zoom-lens {
@@ -444,4 +446,7 @@ body {
   /*set the size of the result div:*/
   width: 300px;
   height: 300px;
+}
+#myimage {
+  width: 100%;
 }
