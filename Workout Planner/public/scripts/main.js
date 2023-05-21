@@ -2,6 +2,7 @@ var rhit = rhit || {};
 
 rhit.fbAuthManager = null;
 rhit.myPlansManager = null;
+rhit.todaysWorkoutManager = null;
 rhit.upcomingWorkoutsManager = null;
 rhit.existingPlansManager = null;
 rhit.PLANS_COLLECTION = "Workout Plans";
@@ -28,7 +29,18 @@ rhit.setFavorite = function (wp) {
 // WORKOUT PLAN OBJECT
 //
 rhit.WorkoutPlan = class {
-  constructor(id, name, goal, level, sessions, uid, time, favorite, exercises, startDate) {
+  constructor(
+    id,
+    name,
+    goal,
+    level,
+    sessions,
+    uid,
+    time,
+    favorite,
+    exercises,
+    startDate
+  ) {
     this.id = id;
     this.name = name;
     this.goal = goal;
@@ -91,7 +103,6 @@ rhit.MyPlansManager = class {
       ["startDate"]: firebase.firestore.Timestamp.now(),
     });
   }
-
 
   addExisting(wp) {
     this.add(
@@ -284,7 +295,6 @@ rhit.ExercisesManager = class {
   // get exName() {
   //   return this._documentSnapshot.get("Name");
   // }
-
 };
 
 rhit.PastWorkoutsManager = class {
@@ -339,7 +349,7 @@ rhit.PastWorkoutsManager = class {
       docSnapshot.get("year"),
       docSnapshot.get("plan"),
       docSnapshot.get("uid"),
-      docSnapshot.get("complete"),
+      docSnapshot.get("complete")
     );
     return wp;
   }
@@ -357,20 +367,18 @@ rhit.PastWorkoutsManager = class {
         merge: true
       }).then(() => {
         console.log("document successfully added");
-      }).catch(function (error) {
+      })
+      .catch(function (error) {
         console.log("Error adding document: ", error);
       });
   }
-
 };
-
 
 rhit.UpcomingWorkoutsManager = class {
   constructor() {
     this._documentSnapshots = [];
     this._ref = firebase.firestore().collection("upcoming");
     this._unsubscribe = null;
-
   }
   beginListening(changeListener) {
     // let query = this._ref.orderBy("year").orderBy("month").orderBy("day", "desc").limit(10);
@@ -410,7 +418,8 @@ rhit.UpcomingWorkoutsManager = class {
         merge: true
       }).then(() => {
         console.log("document successfully added");
-      }).catch(function (error) {
+      })
+      .catch(function (error) {
         console.log("Error adding document: ", error);
       });
   }
@@ -442,7 +451,7 @@ rhit.UpcomingWorkoutsManager = class {
       docSnapshot.get("month"),
       docSnapshot.get("year"),
       docSnapshot.get("plan"),
-      docSnapshot.get("uid"),
+      docSnapshot.get("uid")
     );
     return wp;
   }
@@ -450,7 +459,6 @@ rhit.UpcomingWorkoutsManager = class {
   delete(wp) {
     return this._ref.doc(wp.id).delete();
   }
-
 };
 
 rhit.SinglePlanManager = class {
@@ -478,7 +486,7 @@ rhit.SinglePlanManager = class {
   setFav(fav) {
     this._ref
       .update({
-        ["favorite"]: fav
+        ["favorite"]: fav,
       })
       .then(() => {
         console.log("document successfully updated");
@@ -523,6 +531,28 @@ rhit.SinglePlanManager = class {
   }
   get goal() {
     return this._documentSnapshot.get("Goal");
+  }
+};
+
+rhit.TodaysWorkoutManager = class {
+  constructor() {
+    this._documentSnapshot = {};
+    this._unsubscribe = null;
+    this._ref = firebase.firestore().collection("Workout Plans");
+  }
+  beginListening(changeListener) {
+    this._unsubscribe = this._ref.onSnapshot((doc) => {
+      if (doc.exists) {
+        console.log("Document data: ", doc.data());
+        this._documentSnapshot = doc;
+        changeListener();
+      } else {
+        console.log("No such document!");
+      }
+    });
+  }
+  stopListening() {
+    this._unsubscribe();
   }
 };
 
@@ -626,8 +656,7 @@ rhit.SinglePlanController = class {
           if (wp.id === planId) {
             console.log(wp.id);
             this.singlePlanManager.setFav(true);
-          }
-          else {
+          } else {
             this.singlePlanManager.setFav(false);
           }
         }
@@ -657,44 +686,46 @@ rhit.TodaysWorkoutController = class {
     this.favoritePlan = null;
     this._documentSnapshots = [];
     this._ref = firebase.firestore().collection("Workout Plans");
-    console.log(this.favArg);
-    this.favoritePlan = this.getFavorite();
-    console.log(this.favArg);
-    this.displayPlan();
+    rhit.todaysWorkoutManager.beginListening(this.updateList.bind(this));
+  }
+  _createCard(wp) {
+    return htmlToElement(
+      ` <div style="width: 18rem;">
+      <div class="card favorite-${wp.favorite}">
+        <h5 class="card-title">&nbsp;&nbsp;&nbsp;&nbsp;${wp.name}</h5>
+        
+      </div>
+    </div>`
+    );
   }
 
-  getFavorite() {
-    let fav = null;
-    this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
-      this._documentSnapshots = querySnapshot.docs;
+  updateList() {
+    const newList = htmlToElement(`<div id="exercisesList"></div>`);
 
-      for (let i = 0; i < this._documentSnapshots.length; i++) {
-        const docSnapshot = this._documentSnapshots[i];
+    for (let i = 0; i < rhit.myPlansManager.length; i++) {
+      const wp = rhit.myPlansManager.getPlanAtIndex(i);
+      if (wp.favorite == true) {
+        const newCard = this._createCard(wp);
 
-        const wp = new rhit.WorkoutPlan(
-          docSnapshot.id,
-          docSnapshot.get("Name"),
-          docSnapshot.get("Goal"),
-          docSnapshot.get("Difficulty"),
-          docSnapshot.get("Days"),
-          docSnapshot.get("uid"),
-          docSnapshot.get("time"),
-          docSnapshot.get("favorite"),
-          docSnapshot.get("Weekday"),
-          docSnapshot.get("startDate")
-        );
-        if (wp.favorite == true && wp.uid == rhit.fbAuthManager.uid) {
-          fav = wp;
-          return fav;
+        newCard.onclick = (event) => {
+          window.location.href = `/plan.html?id=${wp.id}`;
+        };
+        //TODO: ADD LISTENERS FOR EDIT FAVORITE AND DELETE BUTTONS
+        if (wp.uid == rhit.fbAuthManager.uid) {
+          // newCard.onclick = (event) => {
+          // 	window.location.href = `/moviequote.html?id=${mq.id}`;
+          // }
+
+          newList.appendChild(newCard);
         }
       }
+    }
 
+    const oldList = document.querySelector("#plansList");
+    oldList.removeAttribute("id");
+    oldList.hidden = true;
 
-    });
-
-  }
-  displayPlan() {
-    console.log(this.favoritePlan);
+    oldList.parentElement.appendChild(newList);
   }
 };
 
@@ -709,7 +740,6 @@ rhit.MyAccountController = class {
 
 rhit.CustomPlanController = class {
   constructor(planId) {
-
     let day = "";
     document.querySelector("#monButton").onclick = (event) => {
       day = "Monday";
@@ -736,10 +766,9 @@ rhit.CustomPlanController = class {
       let exName;
       if (document.querySelector("#customName").value) {
         exName = document.querySelector("#customName").value;
-      }
-      else {
+      } else {
         // console.log(exName = document.querySelector("#exercise-names").innerHTML);
-        var s = document.getElementsByName('exercise-names')[0];
+        var s = document.getElementsByName("exercise-names")[0];
         var text = s.options[s.selectedIndex].text;
         console.log(text);
         exName = text;
@@ -750,7 +779,6 @@ rhit.CustomPlanController = class {
       rhit.exercisesManager.update(day, exName, sets, reps, weight);
     };
     $("#addCustomDialog").on("show.bs.modal", (event) => {
-
       document.querySelector("#customName").value = "";
       document.querySelector("#inputSets").value = "";
       document.querySelector("#inputReps").value = "";
@@ -806,7 +834,15 @@ rhit.CustomPlanController = class {
   }
 
   updateList() {
-    let day = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    let day = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
     let oldList = "";
     let newList = "";
     for (let i = 0; i < day.length; i++) {
@@ -814,28 +850,22 @@ rhit.CustomPlanController = class {
         console.log("working");
         oldList = document.querySelector("#monList");
         newList = htmlToElement(`<div id="monList"></div>`);
-      }
-      else if (day[i] === "Tuesday") {
+      } else if (day[i] === "Tuesday") {
         oldList = document.querySelector("#tueList");
         newList = htmlToElement(`<div id="tueList"></div>`);
-      }
-      else if (day[i] === "Wednesday") {
+      } else if (day[i] === "Wednesday") {
         oldList = document.querySelector("#wedList");
         newList = htmlToElement(`<div id="wedList"></div>`);
-      }
-      else if (day[i] === "Thursday") {
+      } else if (day[i] === "Thursday") {
         oldList = document.querySelector("#thuList");
         newList = htmlToElement(`<div id="thuList"></div>`);
-      }
-      else if (day[i] === "Friday") {
+      } else if (day[i] === "Friday") {
         oldList = document.querySelector("#friList");
         newList = htmlToElement(`<div id="friList"></div>`);
-      }
-      else if (day[i] === "Saturday") {
+      } else if (day[i] === "Saturday") {
         oldList = document.querySelector("#satList");
         newList = htmlToElement(`<div id="satList"></div>`);
-      }
-      else if (day[i] === "Sunday") {
+      } else if (day[i] === "Sunday") {
         oldList = document.querySelector("#sunList");
         newList = htmlToElement(`<div id="sunList"></div>`);
       }
@@ -844,7 +874,6 @@ rhit.CustomPlanController = class {
 
       let exercises = rhit.exercisesManager.getExercisesFor(day[i]);
       if (exercises) {
-
         for (const [key, value] of Object.entries(exercises)) {
           console.log(key, value);
           // const wp = [key, value];
@@ -860,7 +889,6 @@ rhit.CustomPlanController = class {
           //   console.log("working");
           // }
         }
-
 
         oldList.removeAttribute("id");
         oldList.hidden = true;
@@ -934,13 +962,32 @@ rhit.UpcomingWorkoutsController = class {
 
     rhit.exercisesManager.beginListening(this.updateList.bind(this));
     rhit.myPlansManager.beginListening(this.updateList.bind(this));
-
   }
   _createCard(prev) {
     // console.log(wp.name);
-    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["January", "February", "March", "April", "May", "June", "July",
-      "August", "September", "October", "November", "December"];
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     // console.log(prev.getDay());
     return htmlToElement(
       ` <button type="button" id="future" class="collapsible">${weekdays[prev.getDay()]}, ${months[prev.getMonth()]} ${prev.getDate()}, ${prev.getFullYear()}</button>
@@ -950,11 +997,33 @@ rhit.UpcomingWorkoutsController = class {
 
   _contentDay(day) {
     // console.log(day);
-    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["January", "February", "March", "April", "May", "June", "July",
-      "August", "September", "October", "November", "December"];
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     return htmlToElement(
-      `<h5 id="appear">&emsp;${weekdays[day.getDay()]}, ${months[day.getMonth()]} ${day.getDate()}, ${day.getFullYear()}</h5>`
+      `<h5 id="appear">&emsp;${weekdays[day.getDay()]}, ${
+        months[day.getMonth()]
+      } ${day.getDate()}, ${day.getFullYear()}</h5>`
     );
   }
   _contentCard(key, val) {
@@ -988,14 +1057,23 @@ rhit.UpcomingWorkoutsController = class {
         var lastDay = wp.startDate.toDate();
         var content;
         lastDay.setDate(lastDay.getDate() + 1);
-        const week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const week = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
 
         let j = 0;
         while (j < 10) {
-          let exercises = rhit.exercisesManager.getExercisesFor(week[tmrw.getDay()]);
+          let exercises = rhit.exercisesManager.getExercisesFor(
+            week[tmrw.getDay()]
+          );
           if (exercises) {
             rhit.upcomingWorkoutsManager.set(tmrw.getDate(), tmrw.getMonth() + 1, tmrw.getFullYear(), wp.id, wp.uid, false)
-
 
             content = [Object.entries(exercises).length];
             j++;
@@ -1026,7 +1104,6 @@ rhit.UpcomingWorkoutsController = class {
             };
           }
           tmrw.setDate(tmrw.getDate() + 1);
-
         }
       }
     }
@@ -1042,7 +1119,6 @@ rhit.UpcomingWorkoutsController = class {
     oldList.parentElement.appendChild(newList);
   }
 };
-
 
 rhit.PastWorkoutsController = class {
   constructor() {
@@ -1080,9 +1156,29 @@ rhit.PastWorkoutsController = class {
   }
   _createCard(prev) {
     // console.log(wp.name);
-    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["January", "February", "March", "April", "May", "June", "July",
-      "August", "September", "October", "November", "December"];
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     // console.log(prev.getDay());
     return htmlToElement(
       ` <button type="button" id="complete" class="collapsible">${weekdays[prev.getDay()]}, ${months[prev.getMonth()]} ${prev.getDate()}, ${prev.getFullYear()}</button>
@@ -1092,11 +1188,33 @@ rhit.PastWorkoutsController = class {
 
   _contentDay(day) {
     // console.log(day);
-    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["January", "February", "March", "April", "May", "June", "July",
-      "August", "September", "October", "November", "December"];
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     return htmlToElement(
-      `<h5 id="appear">&emsp;${weekdays[day.getDay()]}, ${months[day.getMonth()]} ${day.getDate()}, ${day.getFullYear()}</h5>`
+      `<h5 id="appear">&emsp;${weekdays[day.getDay()]}, ${
+        months[day.getMonth()]
+      } ${day.getDate()}, ${day.getFullYear()}</h5>`
     );
   }
   _contentCard(key, val) {
@@ -1157,7 +1275,15 @@ rhit.PastWorkoutsController = class {
         var content;
         // lastDay.setDate(lastDay.getDate() - (lastDay.getDay() - 7));
         // lastDay.setDate(lastDay.getDate() + 1);
-        const week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const week = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
 
 
 
@@ -1204,7 +1330,6 @@ rhit.PastWorkoutsController = class {
           };
         }
         // tmrw.setDate(tmrw.getDate() - 1);
-
       }
       // }
     }
@@ -1268,6 +1393,67 @@ rhit.ExistingPlansController = class {
     oldList.parentElement.appendChild(newList);
   }
 };
+
+rhit.MapPageController = class {
+  constructor() {
+    this.imageZoom("myimage", "myresult");
+  }
+  imageZoom(imgID, resultID) {
+    var img, lens, result, cx, cy;
+    img = document.getElementById(imgID);
+    result = document.getElementById(resultID);
+    /* Create lens: */
+    lens = document.createElement("DIV");
+    lens.setAttribute("class", "img-zoom-lens");
+    /* Insert lens: */
+    img.parentElement.insertBefore(lens, img);
+    /* Calculate the ratio between result DIV and lens: */
+    cx = result.offsetWidth / lens.offsetWidth;
+    cy = result.offsetHeight / lens.offsetHeight;
+    /* Set background properties for the result DIV */
+    result.style.backgroundImage = "url('" + img.src + "')";
+    result.style.backgroundSize = (img.width * cx) + "px " + (img.height * cy) + "px";
+    /* Execute a function when someone moves the cursor over the image, or the lens: */
+    lens.addEventListener("mousemove", moveLens);
+    img.addEventListener("mousemove", moveLens);
+    /* And also for touch screens: */
+    lens.addEventListener("touchmove", moveLens);
+    img.addEventListener("touchmove", moveLens);
+    function moveLens(e) {
+      var pos, x, y;
+      /* Prevent any other actions that may occur when moving over the image */
+      e.preventDefault();
+      /* Get the cursor's x and y positions: */
+      pos = getCursorPos(e);
+      /* Calculate the position of the lens: */
+      x = pos.x - (lens.offsetWidth / 2);
+      y = pos.y - (lens.offsetHeight / 2);
+      /* Prevent the lens from being positioned outside the image: */
+      if (x > img.width - lens.offsetWidth) {x = img.width - lens.offsetWidth;}
+      if (x < 0) {x = 0;}
+      if (y > img.height - lens.offsetHeight) {y = img.height - lens.offsetHeight;}
+      if (y < 0) {y = 0;}
+      /* Set the position of the lens: */
+      lens.style.left = x + "px";
+      lens.style.top = y + "px";
+      /* Display what the lens "sees": */
+      result.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
+    }
+    function getCursorPos(e) {
+      var a, x = 0, y = 0;
+      e = e || window.event;
+      /* Get the x and y positions of the image: */
+      a = img.getBoundingClientRect();
+      /* Calculate the cursor's x and y coordinates, relative to the image: */
+      x = e.pageX - a.left;
+      y = e.pageY - a.top;
+      /* Consider any page scrolling: */
+      x = x - window.pageXOffset;
+      y = y - window.pageYOffset;
+      return {x : x, y : y};
+    }
+  }
+}
 
 //
 // MAIN
@@ -1350,7 +1536,11 @@ rhit.main = function () {
     new rhit.SinglePlanController(planId);
   }
   if (document.querySelector("#todayPage")) {
+    rhit.todaysWorkoutManager = new rhit.TodaysWorkoutManager();
     new rhit.TodaysWorkoutController();
+  }
+  if (document.querySelector("#mapPage")) {
+    new rhit.MapPageController();
   }
 };
 
