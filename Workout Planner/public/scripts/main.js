@@ -1504,6 +1504,7 @@ rhit.ExistingPlansController = class {
         newCard.onclick = (event) => {
           console.log(wp.exercises);
           rhit.existingPlansManager.addExisting(wp, new Date());
+          alert("Plan added")
         };
 
         newList.appendChild(newCard);
