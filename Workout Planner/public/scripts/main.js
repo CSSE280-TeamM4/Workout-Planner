@@ -1396,7 +1396,7 @@ rhit.ExistingPlansController = class {
 
 rhit.MapPageController = class {
   constructor() {
-    this.imageZoom("myimage", "myresult");
+    this.imageZoom("mapimage", "resultimage");
   }
   imageZoom(imgID, resultID) {
     var img, lens, result, cx, cy;
