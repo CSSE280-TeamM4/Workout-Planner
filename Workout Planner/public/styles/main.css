@@ -424,3 +424,7 @@ body {
 #exercise-names{
   -webkit-appearance: menulist;
 }
+
+#map { 
+  height: 400px; 
+}

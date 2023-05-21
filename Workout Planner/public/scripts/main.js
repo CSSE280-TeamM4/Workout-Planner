@@ -1394,6 +1394,17 @@ rhit.ExistingPlansController = class {
   }
 };
 
+rhit.MapPageController = class {
+  constructor() {
+    var map = L.map('map').setView([51.505, -0.09], 13);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+  }
+}
+
 //
 // MAIN
 //
@@ -1477,6 +1488,9 @@ rhit.main = function () {
   if (document.querySelector("#todayPage")) {
     rhit.todaysWorkoutManager = new rhit.TodaysWorkoutManager();
     new rhit.TodaysWorkoutController();
+  }
+  if (document.querySelector("#mapPage")) {
+    new rhit.MapPageController();
   }
 };
 

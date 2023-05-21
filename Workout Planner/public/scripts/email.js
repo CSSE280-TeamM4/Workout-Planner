@@ -1,4 +1,4 @@
-import { https } from 'firebase-functions';
+import { https } from '/firebase-functions';
 import { initializeApp } from 'firebase-admin';
 import { createTransport } from 'nodemailer';
 const cors = require('cors')({origin: true});
