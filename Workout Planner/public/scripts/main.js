@@ -169,7 +169,7 @@ rhit.ExistingPlansManager = class {
       ["uid"]: rhit.fbAuthManager.uid,
       ["time"]: time,
       ["Weekday"]: exercises,
-      ["startDate"]: startDate
+      ["startDate"]: startDate,
     });
   }
   addExisting(wp, startDate) {
@@ -305,7 +305,11 @@ rhit.PastWorkoutsManager = class {
     console.log(this._ref);
   }
   beginListening(changeListener) {
-    let query = this._ref.orderBy("year").orderBy("month").orderBy("day", "desc").limit(10);
+    let query = this._ref
+      .orderBy("year")
+      .orderBy("month")
+      .orderBy("day", "desc")
+      .limit(10);
     this._unsubscribe = query.onSnapshot((querySnapshot) => {
       this._documentSnapshots = querySnapshot.docs;
       changeListener();
@@ -355,17 +359,22 @@ rhit.PastWorkoutsManager = class {
   }
 
   set(day, month, year, plan, uid, complete) {
-    this._ref.doc(day + month + year + plan + uid).set({
-      ["day"]: day,
-      ["month"]: month,
-      ["year"]: year,
-      ["plan"]: plan,
-      ["uid"]: uid,
-      ["complete"]: complete
-    },
-      {
-        merge: true
-      }).then(() => {
+    this._ref
+      .doc(day + month + year + plan + uid)
+      .set(
+        {
+          ["day"]: day,
+          ["month"]: month,
+          ["year"]: year,
+          ["plan"]: plan,
+          ["uid"]: uid,
+          ["complete"]: complete,
+        },
+        {
+          merge: true,
+        }
+      )
+      .then(() => {
         console.log("document successfully added");
       })
       .catch(function (error) {
@@ -406,17 +415,22 @@ rhit.UpcomingWorkoutsManager = class {
   // }
 
   set(day, month, year, plan, uid, complete) {
-    this._ref.doc(day + month + year + plan + uid).set({
-      ["day"]: day,
-      ["month"]: month,
-      ["year"]: year,
-      ["plan"]: plan,
-      ["uid"]: uid,
-      ["complete"]: complete
-    },
-      {
-        merge: true
-      }).then(() => {
+    this._ref
+      .doc(day + month + year + plan + uid)
+      .set(
+        {
+          ["day"]: day,
+          ["month"]: month,
+          ["year"]: year,
+          ["plan"]: plan,
+          ["uid"]: uid,
+          ["complete"]: complete,
+        },
+        {
+          merge: true,
+        }
+      )
+      .then(() => {
         console.log("document successfully added");
       })
       .catch(function (error) {
@@ -673,8 +687,6 @@ rhit.SinglePlanController = class {
 
       alert("This plan has been set has active");
     };
-
-
   }
   updateView() {
     document.querySelector("#cardPlan").innerHTML = rhit.singlePlanManager.name;
@@ -684,7 +696,6 @@ rhit.SinglePlanController = class {
 
 rhit.NextWorkoutController = class {
   constructor() {
-
     rhit.exercisesManager.beginListening(this.updateList.bind(this));
     rhit.myPlansManager.beginListening(this.updateList.bind(this));
   }
@@ -712,9 +723,13 @@ rhit.NextWorkoutController = class {
       "November",
       "December",
     ];
-    
+
     return htmlToElement(
-      ` <button type="button" id="future" class="collapsible">${weekdays[prev.getDay()]}, ${months[prev.getMonth()]} ${prev.getDate()}, ${prev.getFullYear()}</button>
+      ` <button type="button" id="future" class="collapsible">${
+        weekdays[prev.getDay()]
+      }, ${
+        months[prev.getMonth()]
+      } ${prev.getDate()}, ${prev.getFullYear()}</button>
       <div id=expansion></div>`
     );
   }
@@ -796,7 +811,14 @@ rhit.NextWorkoutController = class {
             week[tmrw.getDay()]
           );
           if (exercises) {
-            rhit.upcomingWorkoutsManager.set(tmrw.getDate(), tmrw.getMonth() + 1, tmrw.getFullYear(), wp.id, wp.uid, false)
+            rhit.upcomingWorkoutsManager.set(
+              tmrw.getDate(),
+              tmrw.getMonth() + 1,
+              tmrw.getFullYear(),
+              wp.id,
+              wp.uid,
+              false
+            );
 
             content = [Object.entries(exercises).length];
             j++;
@@ -904,7 +926,6 @@ rhit.CustomPlanController = class {
     document.querySelector("#customBack").onclick = (event) => {
       // window.location.href = "/myPlans.html";
       window.location.href = `/plan.html?id=${planId}`;
-
     };
 
     // document.querySelector("#customSetActive").onclick = (event) => {
@@ -1017,7 +1038,6 @@ rhit.CustomPlanController = class {
 
 rhit.HomePageController = class {
   constructor() {
-    
     document.querySelector("#workoutStreak").onclick = (event) => {
       // window.location.href = "/Calendar.html";
     };
@@ -1042,7 +1062,6 @@ rhit.HomePageController = class {
     this.updateView();
     rhit.myPlansManager.beginListening(this.updateView.bind(this));
     rhit.pastWorkoutsManager.beginListening(this.updateView.bind(this));
-
   }
 
   updateView() {
@@ -1052,8 +1071,7 @@ rhit.HomePageController = class {
         if (wp.complete == true) {
           streak++;
           console.log(streak);
-        }
-        else {
+        } else {
           break;
         }
       }
@@ -1083,7 +1101,6 @@ rhit.HomePageController = class {
 
 rhit.UpcomingWorkoutsController = class {
   constructor() {
-
     rhit.exercisesManager.beginListening(this.updateList.bind(this));
     rhit.myPlansManager.beginListening(this.updateList.bind(this));
   }
@@ -1114,7 +1131,11 @@ rhit.UpcomingWorkoutsController = class {
     ];
     // console.log(prev.getDay());
     return htmlToElement(
-      ` <button type="button" id="future" class="collapsible">${weekdays[prev.getDay()]}, ${months[prev.getMonth()]} ${prev.getDate()}, ${prev.getFullYear()}</button>
+      ` <button type="button" id="future" class="collapsible">${
+        weekdays[prev.getDay()]
+      }, ${
+        months[prev.getMonth()]
+      } ${prev.getDate()}, ${prev.getFullYear()}</button>
       <div id=expansion></div>`
     );
   }
@@ -1197,7 +1218,14 @@ rhit.UpcomingWorkoutsController = class {
             week[tmrw.getDay()]
           );
           if (exercises) {
-            rhit.upcomingWorkoutsManager.set(tmrw.getDate(), tmrw.getMonth() + 1, tmrw.getFullYear(), wp.id, wp.uid, false)
+            rhit.upcomingWorkoutsManager.set(
+              tmrw.getDate(),
+              tmrw.getMonth() + 1,
+              tmrw.getFullYear(),
+              wp.id,
+              wp.uid,
+              false
+            );
 
             content = [Object.entries(exercises).length];
             j++;
@@ -1254,14 +1282,27 @@ rhit.PastWorkoutsController = class {
     document.querySelector("#setComplete").onclick = (event) => {
       console.log(this.lastSelected.day);
       if (this.lastSelected.complete == false) {
-        rhit.pastWorkoutsManager.set(this.lastSelected.day, this.lastSelected.month, this.lastSelected.year, this.lastSelected.plan, this.lastSelected.uid, true)
+        rhit.pastWorkoutsManager.set(
+          this.lastSelected.day,
+          this.lastSelected.month,
+          this.lastSelected.year,
+          this.lastSelected.plan,
+          this.lastSelected.uid,
+          true
+        );
 
         // upcomingWorkoutsManager.set(wp)
         // this.lastSelected.complete = true;
         console.log("set true");
-      }
-      else {
-        rhit.pastWorkoutsManager.set(this.lastSelected.day, this.lastSelected.month, this.lastSelected.year, this.lastSelected.plan, this.lastSelected.uid, false)
+      } else {
+        rhit.pastWorkoutsManager.set(
+          this.lastSelected.day,
+          this.lastSelected.month,
+          this.lastSelected.year,
+          this.lastSelected.plan,
+          this.lastSelected.uid,
+          false
+        );
         console.log("set false");
       }
       // window.location.href = "myPlans.html";
@@ -1269,12 +1310,36 @@ rhit.PastWorkoutsController = class {
   }
   _createFail(prev) {
     // console.log(wp.name);
-    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["January", "February", "March", "April", "May", "June", "July",
-      "August", "September", "October", "November", "December"];
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     // console.log(prev.getDay());
     return htmlToElement(
-      ` <button type="button" id="fail" class="collapsible">${weekdays[prev.getDay()]}, ${months[prev.getMonth()]} ${prev.getDate()}, ${prev.getFullYear()}</button>
+      ` <button type="button" id="fail" class="collapsible">${
+        weekdays[prev.getDay()]
+      }, ${
+        months[prev.getMonth()]
+      } ${prev.getDate()}, ${prev.getFullYear()}</button>
       <div id=expansion></div>`
     );
   }
@@ -1305,7 +1370,11 @@ rhit.PastWorkoutsController = class {
     ];
     // console.log(prev.getDay());
     return htmlToElement(
-      ` <button type="button" id="complete" class="collapsible">${weekdays[prev.getDay()]}, ${months[prev.getMonth()]} ${prev.getDate()}, ${prev.getFullYear()}</button>
+      ` <button type="button" id="complete" class="collapsible">${
+        weekdays[prev.getDay()]
+      }, ${
+        months[prev.getMonth()]
+      } ${prev.getDate()}, ${prev.getFullYear()}</button>
       <div id=expansion></div>`
     );
   }
@@ -1354,8 +1423,6 @@ rhit.PastWorkoutsController = class {
   }
 
   updateList() {
-
-
     // let lastSelected;
     // rhit.upcomingWorkoutsManager.set(wp.day, wp.month, wp.year, wp.plan, wp.uid)
     // console.log("object");
@@ -1376,7 +1443,14 @@ rhit.PastWorkoutsController = class {
       if (wp.uid == rhit.fbAuthManager.uid && curDay < today) {
         // console.log("hi");
 
-        rhit.pastWorkoutsManager.set(wp.day, wp.month, wp.year, wp.plan, wp.uid, false)
+        rhit.pastWorkoutsManager.set(
+          wp.day,
+          wp.month,
+          wp.year,
+          wp.plan,
+          wp.uid,
+          false
+        );
         rhit.upcomingWorkoutsManager.delete(wp);
       }
     }
@@ -1409,21 +1483,19 @@ rhit.PastWorkoutsController = class {
           "Saturday",
         ];
 
-
-
         // let j = 0;
         // while (j < 10) {
-        let exercises = rhit.exercisesManager.getExercisesFor(week[past.getDay()]);
+        let exercises = rhit.exercisesManager.getExercisesFor(
+          week[past.getDay()]
+        );
         // console.log(exercises);
         if (exercises) {
-
           content = [Object.entries(exercises).length];
           // j++;
           // console.log(content);
           if (wp.complete) {
             newCard = this._createCard(past);
-          }
-          else {
+          } else {
             newCard = this._createFail(past);
           }
           newList.appendChild(newCard);
@@ -1504,7 +1576,7 @@ rhit.ExistingPlansController = class {
         newCard.onclick = (event) => {
           console.log(wp.exercises);
           rhit.existingPlansManager.addExisting(wp, new Date());
-          alert("Plan added")
+          alert("Plan added");
         };
 
         newList.appendChild(newCard);
@@ -1521,84 +1593,113 @@ rhit.ExistingPlansController = class {
 
 rhit.MapPageController = class {
   constructor() {
+    //start map
     this.imageZoom("mapimage", "resultimage");
+
+    //Section description buttons
     document.querySelector("#dumbellBtn").onclick = (event) => {
       document.querySelector("#sectionName").innerHTML = "Dumbell Rack";
-      document.querySelector("#sectionImage").src = "images/wImage-dumbells.jpg";
-      document.querySelector("#sectionDesc").innerHTML = "This area has dumbells and freeweight benches.";
-    }
+      document.querySelector("#sectionImage").src =
+        "images/wImage-dumbells.jpg";
+      document.querySelector("#sectionDesc").innerHTML =
+        "This area has dumbells and freeweight benches.";
+    };
     document.querySelector("#squatBtn").onclick = (event) => {
       document.querySelector("#sectionName").innerHTML = "Squat Racks";
       document.querySelector("#sectionImage").src = "images/wImage-squat.jpg";
-      document.querySelector("#sectionDesc").innerHTML = "This area has squat racks for squatting, benching, and other barbell exercises.";
-    }
+      document.querySelector("#sectionDesc").innerHTML =
+        "This area has squat racks for squatting, benching, and other barbell exercises.";
+    };
     document.querySelector("#cardioBtn").onclick = (event) => {
       document.querySelector("#sectionName").innerHTML = "Cardio room";
       document.querySelector("#sectionImage").src = "images/wImage-cardio.jpg";
-      document.querySelector("#sectionDesc").innerHTML = "This area has some assorted weight machines and a variety of cardio machines";
-    }
+      document.querySelector("#sectionDesc").innerHTML =
+        "This area has some assorted weight machines and a variety of cardio machines";
+    };
     document.querySelector("#assortedBtn").onclick = (event) => {
       document.querySelector("#sectionName").innerHTML = "Assorted Machines";
-      document.querySelector("#sectionImage").src = "images/wImage-assorted.jpg";
-      document.querySelector("#sectionDesc").innerHTML = "This area has assorted weight machines";
-    }
+      document.querySelector("#sectionImage").src =
+        "images/wImage-assorted.jpg";
+      document.querySelector("#sectionDesc").innerHTML =
+        "This area has assorted weight machines";
+    };
   }
   imageZoom(imgID, resultID) {
-    var img, lens, result, cx, cy;
-    img = document.getElementById(imgID);
-    result = document.getElementById(resultID);
-    /* Create lens: */
-    lens = document.createElement("DIV");
-    lens.setAttribute("class", "img-zoom-lens");
-    /* Insert lens: */
-    img.parentElement.insertBefore(lens, img);
-    /* Calculate the ratio between result DIV and lens: */
-    cx = result.offsetWidth / lens.offsetWidth;
-    cy = result.offsetHeight / lens.offsetHeight;
-    /* Set background properties for the result DIV */
-    result.style.backgroundImage = "url('" + img.src + "')";
-    result.style.backgroundSize = (img.width * cx) + "px " + (img.height * cy) + "px";
-    /* Execute a function when someone moves the cursor over the image, or the lens: */
+    // Get map and zoom elements
+    let map = document.getElementById(imgID);
+    let zoomResult = document.getElementById(resultID);
+
+    console.log(map);
+    console.log(zoomResult);
+
+    //Create lens element and insert it
+    let lens = document.createElement("DIV");
+    lens.setAttribute("class", "zoom-lens");
+    map.parentElement.insertBefore(lens, map);
+
+    //Calculate the size ratio between map and zoomResult
+    let cx = zoomResult.offsetWidth / lens.offsetWidth;
+    let cy = zoomResult.offsetHeight / lens.offsetHeight;
+    // clg("x ratio: " + cx + ", y ratio: cy");
+
+    //Set zoom box background image and size
+    zoomResult.style.backgroundImage = "url('" + map.src + "')";
+    zoomResult.style.backgroundSize =
+      map.width * cx + "px " + map.height * cy + "px";
+
+    //Call functions to move lend with cursor
     lens.addEventListener("mousemove", moveLens);
-    img.addEventListener("mousemove", moveLens);
-    /* And also for touch screens: */
+    map.addEventListener("mousemove", moveLens);
     lens.addEventListener("touchmove", moveLens);
-    img.addEventListener("touchmove", moveLens);
+    map.addEventListener("touchmove", moveLens);
+
+    //functions from https://www.w3schools.com/howto/howto_js_image_zoom.asp
     function moveLens(e) {
-      var pos, x, y;
-      /* Prevent any other actions that may occur when moving over the image */
       e.preventDefault();
-      /* Get the cursor's x and y positions: */
-      pos = getCursorPos(e);
-      /* Calculate the position of the lens: */
-      x = pos.x - (lens.offsetWidth / 2);
-      y = pos.y - (lens.offsetHeight / 2);
-      /* Prevent the lens from being positioned outside the image: */
-      if (x > img.width - lens.offsetWidth) {x = img.width - lens.offsetWidth;}
-      if (x < 0) {x = 0;}
-      if (y > img.height - lens.offsetHeight) {y = img.height - lens.offsetHeight;}
-      if (y < 0) {y = 0;}
+
+      //Get position of the cursor and lens
+      let pos = getCursorPos(e);
+      let x = pos.x - lens.offsetWidth / 2;
+      let y = pos.y - lens.offsetHeight / 2;
+
+      //Bounds checking
+      if (x > map.width - lens.offsetWidth) {
+        x = map.width - lens.offsetWidth;
+      }
+      if (x < 0) {
+        x = 0;
+      }
+      if (y > map.height - lens.offsetHeight) {
+        y = map.height - lens.offsetHeight;
+      }
+      if (y < 0) {
+        y = 0;
+      }
       /* Set the position of the lens: */
       lens.style.left = x + "px";
       lens.style.top = y + "px";
-      /* Display what the lens "sees": */
-      result.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
+      
+      //Sets the zoom box to display the same position as the lens
+      zoomResult.style.backgroundPosition =
+        "-" + x * cx + "px -" + y * cy + "px";
     }
     function getCursorPos(e) {
-      var a, x = 0, y = 0;
+      var a,
+        x = 0,
+        y = 0;
       e = e || window.event;
       /* Get the x and y positions of the image: */
-      a = img.getBoundingClientRect();
+      a = map.getBoundingClientRect();
       /* Calculate the cursor's x and y coordinates, relative to the image: */
       x = e.pageX - a.left;
       y = e.pageY - a.top;
       /* Consider any page scrolling: */
       x = x - window.pageXOffset;
       y = y - window.pageYOffset;
-      return {x : x, y : y};
+      return { x: x, y: y };
     }
   }
-}
+};
 
 //
 // MAIN
